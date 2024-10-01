@@ -33,7 +33,7 @@ export default function Home({ navigateToLaunchScreen }: HomeProps) {
     <View style={styles.paddingItem}>
       <Image source={img} />
       <Text style={{color: 'gray'}}>{name}</Text>
-      <Text>{status}</Text>
+      <Text style={{color: 'gray'}}>{status}</Text>
     </View>
   );
 
