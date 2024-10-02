@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, S
 import TabBarMenu from '../components/TabBarMenu';
 
 
-export default function Home({ navigation }: any) {
+export default function Home({ navigateToLaunchScreen }: any) {
 
   const [activeTab, setActiveTab] = useState('Home');
 
