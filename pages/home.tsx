@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import TabBarMenu from '../components/TabBarMenu';
 
-interface HomeProps {
-  navigateToLaunchScreen: () => void;
-}
 
-export default function Home({ navigateToLaunchScreen }: HomeProps) {
+export default function Home({ navigation }: any) {
 
   const [activeTab, setActiveTab] = useState('Home');
 

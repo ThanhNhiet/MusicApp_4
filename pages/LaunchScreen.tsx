@@ -2,11 +2,11 @@ import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-type LaunchScreenProps = {
-  navigateToHome: () => void;
-};
+// type LaunchScreenProps = {
+//   navigateToHome: () => void;
+// };
 
-export default function LaunchScreen({ navigateToHome }: LaunchScreenProps) {
+export default function LaunchScreen({ navigateToHome }: any) {
 
   return (
     <ImageBackground

@@ -1,5 +1,3 @@
-// components/TabBarMenu.tsx
-
 import React from 'react';
 import { View, TouchableOpacity, Image, Text, StyleSheet } from 'react-native';
 

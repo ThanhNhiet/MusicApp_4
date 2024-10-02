@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { BackHandler, View } from 'react-native';
+import TabBarMenu from '../components/TabBarMenu';
 import LaunchScreen from '../pages/LaunchScreen';
 import Home from '../pages/Home';
+import Search from '../pages/Search';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
@@ -14,6 +16,11 @@ export default function App() {
     setCurrentScreen('LaunchScreen');
   };
 
+  const navigateToSearch = () => {
+    setCurrentScreen('Search');
+  };
+
+  //back hardware button
   useEffect(() => {
     const backAction = () => {
       if (currentScreen === 'Home') {
@@ -22,9 +29,7 @@ export default function App() {
       }
       return false; // Cho phép hành động mặc định nếu không ở màn hình Home
     };
-
     const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
-
     return () => backHandler.remove(); // Dọn dẹp listener khi component bị gỡ bỏ
   }, [currentScreen]);
 
@@ -32,6 +37,13 @@ export default function App() {
     <View style={{ flex: 1 }}>
       {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} />}
       {currentScreen === 'Home' && <Home navigateToLaunchScreen={navigateToLaunchScreen} />}
+      {currentScreen === 'Search' && <Search />}
+
+      <TabBarMenu activeTab={currentScreen} onTabPress={(tabName) => {
+        if (tabName === 'Search') {
+          navigateToSearch(); // Điều hướng đến trang Search
+        }
+      }} />
     </View>
   );
 }
