@@ -39,11 +39,18 @@ export default function App() {
       {currentScreen === 'Home' && <Home navigateToLaunchScreen={navigateToLaunchScreen} />}
       {currentScreen === 'Search' && <Search />}
 
-      <TabBarMenu activeTab={currentScreen} onTabPress={(tabName) => {
-        if (tabName === 'Search') {
-          navigateToSearch(); // Điều hướng đến trang Search
-        }
-      }} />
+      {(currentScreen === 'Home') && (
+        <TabBarMenu 
+          activeTab={currentScreen} 
+          onTabPress={(tabName) => {
+            if (tabName === 'Home') {
+              navigateToHome();
+            } else if (tabName === 'Search') {
+              navigateToSearch();
+            }
+          }} 
+        />
+      )}
     </View>
   );
 }
