@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
-import TabBarMenu from '../components/TabBarMenu';
-
 
 export default function Home({ navigateToLaunchScreen }: any) {
 
@@ -185,7 +183,7 @@ export default function Home({ navigateToLaunchScreen }: any) {
         </View>
       </ScrollView>
 
-      <TabBarMenu activeTab={activeTab} onTabPress={handleTabPress} />
+      
     </View>
   );
 }

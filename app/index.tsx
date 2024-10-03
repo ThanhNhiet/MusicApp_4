@@ -39,7 +39,7 @@ export default function App() {
       {currentScreen === 'Home' && <Home navigateToLaunchScreen={navigateToLaunchScreen} />}
       {currentScreen === 'Search' && <Search />}
 
-      {(currentScreen === 'Home') && (
+      {(currentScreen === 'Home' || currentScreen === 'Search') && (
         <TabBarMenu 
           activeTab={currentScreen} 
           onTabPress={(tabName) => {
