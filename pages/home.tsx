@@ -1,13 +1,7 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 
-export default function Home({ navigateToLaunchScreen }: any) {
-
-  const [activeTab, setActiveTab] = useState('Home');
-
-  const handleTabPress = (tabName: string) => {
-    setActiveTab(tabName);
-  };
+export default function Home({ navigateToPlayListDetail }: any) {
 
   const suggestions = [
     { id: '1', img: require("../assets/images/Home - Audio Listing/Container 26.png") },
@@ -30,6 +24,7 @@ export default function Home({ navigateToLaunchScreen }: any) {
   ];
 
   type chartProps = {
+    id: string;
     name: string;
     status: string;
     img: any;
@@ -54,9 +49,9 @@ export default function Home({ navigateToLaunchScreen }: any) {
     </View>
   );
 
-  const Chart = ({ name, status, img }: chartProps) => (
+  const Chart = ({id, name, status, img }: chartProps) => (
     <View style={styles.paddingItem}>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={id === '1' ? navigateToPlayListDetail : undefined}>
         <Image source={img} />
       </TouchableOpacity>
       <Text style={{ color: 'gray' }}>{name}</Text>
@@ -92,7 +87,7 @@ export default function Home({ navigateToLaunchScreen }: any) {
         <View style={styles.headerContainer}>
           <Image source={require("../assets/images/Home - Audio Listing/Image 36.png")} />
           <View style={styles.rightHeader}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={navigateToPlayListDetail}>
               <Image source={require("../assets/images/Home - Audio Listing/bell_icon.png")} style={{ height: 25, width: 20 }} />
             </TouchableOpacity>
             <TouchableOpacity>
@@ -139,7 +134,7 @@ export default function Home({ navigateToLaunchScreen }: any) {
             horizontal
             data={charts}
             renderItem={({ item }) => (
-              <Chart img={item.img} name={item.name} status={item.status} />
+              <Chart id={item.id} img={item.img} name={item.name} status={item.status} />
             )}
             keyExtractor={item => item.id}
             showsHorizontalScrollIndicator={false}

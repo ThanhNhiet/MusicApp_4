@@ -4,6 +4,7 @@ import TabBarMenu from '../components/TabBarMenu';
 import LaunchScreen from '../pages/LaunchScreen';
 import Home from '../pages/Home';
 import Search from '../pages/Search';
+import PlaylistDetail from '../pages/PlaylistDetail';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
@@ -14,6 +15,10 @@ export default function App() {
 
   const navigateToLaunchScreen = () => {
     setCurrentScreen('LaunchScreen');
+  };
+
+  const navigateToPlaylistDetail = () => {
+    setCurrentScreen('PlaylistDetail');
   };
 
   const navigateToSearch = () => {
@@ -36,10 +41,11 @@ export default function App() {
   return (
     <View style={{ flex: 1 }}>
       {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} />}
-      {currentScreen === 'Home' && <Home navigateToLaunchScreen={navigateToLaunchScreen} />}
+      {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} />}
+      {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome}/>}
       {currentScreen === 'Search' && <Search />}
 
-      {(currentScreen === 'Home' || currentScreen === 'Search') && (
+      {(currentScreen === 'Home' || currentScreen === 'Search' || currentScreen === 'PlaylistDetail') && (
         <TabBarMenu 
           activeTab={currentScreen} 
           onTabPress={(tabName) => {
