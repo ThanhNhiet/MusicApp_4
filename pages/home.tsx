@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function Home({ navigateToPlayListDetail }: any) {
 
@@ -49,7 +50,7 @@ export default function Home({ navigateToPlayListDetail }: any) {
     </View>
   );
 
-  const Chart = ({id, name, status, img }: chartProps) => (
+  const Chart = ({ id, name, status, img }: chartProps) => (
     <View style={styles.paddingItem}>
       <TouchableOpacity onPress={id === '1' ? navigateToPlayListDetail : undefined}>
         <Image source={img} />
@@ -82,104 +83,104 @@ export default function Home({ navigateToPlayListDetail }: any) {
   );
 
   return (
-    <View style={styles.container}>
-      <ScrollView style={styles.scrollcontainer}>
-        <View style={styles.headerContainer}>
-          <Image source={require("../assets/images/Home - Audio Listing/Image 36.png")} />
-          <View style={styles.rightHeader}>
-            <TouchableOpacity onPress={navigateToPlayListDetail}>
-              <Image source={require("../assets/images/Home - Audio Listing/bell_icon.png")} style={{ height: 25, width: 20 }} />
-            </TouchableOpacity>
-            <TouchableOpacity>
-              <Image source={require("../assets/images/Home - Audio Listing/Avatar 3.png")} style={{ justifyContent: 'flex-end', marginLeft: 10 }} />
-            </TouchableOpacity>
+    <SafeAreaProvider>
+      <SafeAreaView style={styles.container}>
+        <ScrollView style={styles.scrollcontainer}>
+          <View style={styles.headerContainer}>
+            <Image source={require("../assets/images/Home - Audio Listing/Image 36.png")} />
+            <View style={styles.rightHeader}>
+              <TouchableOpacity>
+                <Image source={require("../assets/images/Home - Audio Listing/bell_icon.png")} style={{ height: 25, width: 20 }} />
+              </TouchableOpacity>
+              <TouchableOpacity>
+                <Image source={require("../assets/images/Home - Audio Listing/Avatar 3.png")} style={{ justifyContent: 'flex-end', marginLeft: 10 }} />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
 
-        <View style={styles.welcomeContainer}>
-          <Text style={{ color: 'gray' }}>Good morning,</Text>
-          <Text style={styles.title}>Ashley Scott</Text>
-        </View>
-
-        <View style={styles.searchContainer}>
-          <Image source={require("../assets/images/Home - Audio Listing/search_icon.png")} style={{ width: 20, height: 20 }} />
-          <TextInput
-            style={styles.search}
-            placeholder='What you want to listen to'
-          />
-        </View>
-
-        <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Suggestions for you</Text>
-          <FlatList
-            style={{ marginTop: 5 }}
-            horizontal
-            data={suggestions}
-            renderItem={({ item }) => (
-              <Suggestion img={item.img} />
-            )}
-            keyExtractor={item => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-
-        <View style={styles.sectionContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Charts</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAll}>See all</Text>
-            </TouchableOpacity>
+          <View style={styles.welcomeContainer}>
+            <Text style={{ color: 'gray' }}>Good morning,</Text>
+            <Text style={styles.title}>Ashley Scott</Text>
           </View>
-          <FlatList
-            horizontal
-            data={charts}
-            renderItem={({ item }) => (
-              <Chart id={item.id} img={item.img} name={item.name} status={item.status} />
-            )}
-            keyExtractor={item => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
 
-        <View style={styles.sectionContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Trending albums</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAll}>See all</Text>
-            </TouchableOpacity>
+          <View style={styles.searchContainer}>
+            <Image source={require("../assets/images/Home - Audio Listing/search_icon.png")} style={{ width: 20, height: 20 }} />
+            <TextInput
+              style={styles.search}
+              placeholder='What you want to listen to'
+            />
           </View>
-          <FlatList
-            horizontal
-            data={albums}
-            renderItem={({ item }) => (
-              <Album img={item.img} name={item.name} artist={item.artist} />
-            )}
-            keyExtractor={item => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
 
-        <View style={styles.sectionContainer}>
-          <View style={styles.titleContainer}>
-            <Text style={styles.sectionTitle}>Popular artists</Text>
-            <TouchableOpacity>
-              <Text style={styles.seeAll}>See all</Text>
-            </TouchableOpacity>
+          <View style={styles.sectionContainer}>
+            <Text style={styles.sectionTitle}>Suggestions for you</Text>
+            <FlatList
+              style={{ marginTop: 5 }}
+              horizontal
+              data={suggestions}
+              renderItem={({ item }) => (
+                <Suggestion img={item.img} />
+              )}
+              keyExtractor={item => item.id}
+              showsHorizontalScrollIndicator={false}
+            />
           </View>
-          <FlatList
-            horizontal
-            data={artists}
-            renderItem={({ item }) => (
-              <Artist img={item.img} name={item.name} />
-            )}
-            keyExtractor={item => item.id}
-            showsHorizontalScrollIndicator={false}
-          />
-        </View>
-      </ScrollView>
 
-      
-    </View>
+          <View style={styles.sectionContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.sectionTitle}>Charts</Text>
+              <TouchableOpacity>
+                <Text style={styles.seeAll}>See all</Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              horizontal
+              data={charts}
+              renderItem={({ item }) => (
+                <Chart id={item.id} img={item.img} name={item.name} status={item.status} />
+              )}
+              keyExtractor={item => item.id}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+
+          <View style={styles.sectionContainer}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.sectionTitle}>Trending albums</Text>
+              <TouchableOpacity>
+                <Text style={styles.seeAll}>See all</Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              horizontal
+              data={albums}
+              renderItem={({ item }) => (
+                <Album img={item.img} name={item.name} artist={item.artist} />
+              )}
+              keyExtractor={item => item.id}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+
+          <View style={[styles.sectionContainer, {height: 300}]}>
+            <View style={styles.titleContainer}>
+              <Text style={styles.sectionTitle}>Popular artists</Text>
+              <TouchableOpacity>
+                <Text style={styles.seeAll}>See all</Text>
+              </TouchableOpacity>
+            </View>
+            <FlatList
+              horizontal
+              data={artists}
+              renderItem={({ item }) => (
+                <Artist img={item.img} name={item.name} />
+              )}
+              keyExtractor={item => item.id}
+              showsHorizontalScrollIndicator={false}
+            />
+          </View>
+        </ScrollView>
+      </SafeAreaView>
+    </SafeAreaProvider>
   );
 }
 
@@ -234,7 +235,7 @@ const styles = StyleSheet.create({
     color: 'gray',
     height: 30,
     width: '100%',
-    outlineStyle: 'none',
+    // outlineStyle: 'none',
   },
 
   sectionContainer: {
@@ -266,7 +267,7 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 10,
     marginTop: 5,
-    height: 20,
+    height: 'auto',
     width: 70,
     justifyContent: 'center',
     alignItems: 'center',
