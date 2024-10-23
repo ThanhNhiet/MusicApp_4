@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BackHandler, View } from 'react-native';
 import TabBarMenu from '../components/TabBarMenu';
 import LaunchScreen from '../pages/LaunchScreen';
-import Home from '../pages/Home';
+import Home from '../pages/HomeScreen';
 import Search from '../pages/Search';
 import PlaylistDetail from '../pages/PlaylistDetail';
 
