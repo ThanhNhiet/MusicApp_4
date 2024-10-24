@@ -5,6 +5,7 @@ import LaunchScreen from '../pages/LaunchScreen';
 import Home from '../pages/HomeScreen';
 import Search from '../pages/Search';
 import PlaylistDetail from '../pages/PlaylistDetail';
+import PlayAudioScreen from '../pages/PlayAudioScreen';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
@@ -25,6 +26,10 @@ export default function App() {
     setCurrentScreen('Search');
   };
 
+  const navigateToPlayAudio = () => {
+    setCurrentScreen('PlayAudioScreen');
+  };
+
   //back hardware button
   useEffect(() => {
     const backAction = () => {
@@ -42,8 +47,9 @@ export default function App() {
     <View style={{ flex: 1 }}>
       {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} />}
       {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} />}
-      {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome}/>}
+      {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome} navigateToPlayAudio={navigateToPlayAudio}/>}
       {currentScreen === 'Search' && <Search />}
+      {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} />}
 
       {(currentScreen === 'Home' || currentScreen === 'Search' || currentScreen === 'PlaylistDetail') && (
         <TabBarMenu 
