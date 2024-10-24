@@ -1,7 +1,8 @@
+import { useState } from "react";
 import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function PlaylistDetail({ navigateToHome }: any) {
+export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: any) {
 
     const songs = [
         { id: "1", title: "FLOWER", artist: "Jessica Gonzalez", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 51.png"), Listens: "2.1M" },
@@ -12,17 +13,20 @@ export default function PlaylistDetail({ navigateToHome }: any) {
         { id: "6", title: "Dynamine", artist: "Elena Jimenez", duration: "06:22", image: require("../assets/images/Playlist Details - Audio Listing/Image 56.png"), Listens: "10M" }
     ];
 
+    const [currentSong, setCurrentSong] = useState(songs[0]);
+
     type songProps = {
         title: string;
         artist: string;
         duration: string;
         image: any;
         Listens: string;
+        onPress: () => void;
     };
 
-    const Song = ({ image, title, artist, Listens, duration }: songProps) => (
+    const Song = ({ image, title, artist, Listens, duration, onPress}: songProps) => (
         <View style={styles.containerListSong}>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={onPress}>
                 <Image style={{ height: 70, width: 70 }} source={image} />
             </TouchableOpacity>
 
@@ -110,7 +114,8 @@ export default function PlaylistDetail({ navigateToHome }: any) {
                             data={songs}
                             renderItem={({ item }) => (
                                 <Song image={item.image} title={item.title} artist={item.artist}
-                                    Listens={item.Listens} duration={item.duration} />
+                                    Listens={item.Listens} duration={item.duration} 
+                                    onPress={() => setCurrentSong(item)} />
                             )}
                             keyExtractor={item => item.id}
                         />
@@ -120,15 +125,15 @@ export default function PlaylistDetail({ navigateToHome }: any) {
 
                 <View style={styles.containerPlaying}>
                     <Image
-                        source={require('../assets/images/Playlist Details - Audio Listing/Image 57.png')}
+                        source={currentSong.image}
                         style={{ width: 50, height: 50 }}
                     />
                     <View style={{ flex: 1, marginLeft: 10 }}>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>FLOWER</Text>
+                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>{currentSong.title}</Text>
                         <View style={styles.artistContainer}>
                             <Text style={styles.artistInfo}>Me</Text>
                             <Text style={styles.artistInfo}> ● </Text>
-                            <Text style={styles.artistInfo}>Jessica Gonzalez</Text>
+                            <Text style={styles.artistInfo}>{currentSong.artist}</Text>
                         </View>
                     </View>
 
@@ -139,7 +144,7 @@ export default function PlaylistDetail({ navigateToHome }: any) {
                         />
                     </TouchableOpacity>
 
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={navigateToPlayAudio}>
                         <Image
                             source={require('../assets/images/Playlist Details - Audio Listing/Icon Button 2.png')}
                             style={{ width: 50, height: 50, paddingLeft: 10 }}
