@@ -1,7 +1,57 @@
-import React from 'react';
+import { Route } from 'expo-router/build/Route';
+import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text, ImageBackground } from 'react-native';
+import { Audio } from 'expo-av';
 
-export default function PlayAudioScreen({ navigateToPlayListDetail }: any) {
+export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any) {
+    const [currentSong, setCurrentSong] = useState(song);
+    const [sound, setSound] = useState<Audio.Sound | null>(null); //use state quan ly am thanh
+    const [isPlaying, setIsPlaying] = useState(false); //Trang thai phat nhac
+
+    useEffect(() => {
+        if (song) {
+            setCurrentSong(song); // Cập nhật bài hát hiện tại
+        }
+        return () => {
+            // Cleanup khi component bị unmount
+            if (sound) {
+                sound.unloadAsync();
+            }
+        };
+    }, [song]);
+
+    // Hàm phát hoặc tạm dừng nhạc
+    async function handlePlayPause() {
+        if (sound === null) {
+            // Tạo sound mới nếu chưa có sound
+            const { sound: newSound } = await Audio.Sound.createAsync({
+                uri: currentSong.uri,
+            });
+            setSound(newSound);
+            setIsPlaying(true); // Đang phát nhạc
+            await newSound.playAsync();
+        } else {
+            // Nếu đã có sound, kiểm tra xem đang phát hay tạm dừng
+            if (isPlaying) {
+                await sound.pauseAsync(); // Tạm dừng nhạc
+                setIsPlaying(false);
+            } else {
+                await sound.playAsync(); // Phát lại nhạc
+                setIsPlaying(true);
+            }
+        }
+    }
+
+    async function handleNavigateBack() {
+        if (sound) {
+            if (isPlaying) {
+                await sound.stopAsync(); // Dừng nhạc nếu đang phát
+            }
+            await sound.unloadAsync(); // Giải phóng tài nguyên âm thanh
+        }
+        navigateToPlayListDetail(); // Điều hướng trở lại trang danh sách bài hát
+    }
+
     return (
         <ImageBackground
             source={require('../assets/images/Play an Audio/Image 58.png')}
@@ -11,7 +61,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail }: any) {
             {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Play</Text>
-                <TouchableOpacity onPress={navigateToPlayListDetail}>
+                <TouchableOpacity onPress={handleNavigateBack}>
                     <Image source={require('../assets/images/Play an Audio/dropdown.png')} style={styles.icon} />
                 </TouchableOpacity>
             </View>
@@ -22,8 +72,8 @@ export default function PlayAudioScreen({ navigateToPlayListDetail }: any) {
                 {/* Info */}
                 <View style={styles.infoContainer}>
                     <View>
-                        <Text style={styles.songTitle}>FLOWER</Text>
-                        <Text style={styles.artist}>Jessica Gonzalez</Text>
+                        <Text style={styles.songTitle}>{currentSong.title}</Text>
+                        <Text style={styles.artist}>{currentSong.artist}</Text>
                     </View>
 
                     {/* Audio wave image */}
@@ -35,7 +85,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail }: any) {
                     {/* Time display */}
                     <View style={styles.timeContainer}>
                         <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>0:06</Text>
-                        <Text style={styles.timeText}>3:08</Text>
+                        <Text style={styles.timeText}>{currentSong.duration}</Text>
                     </View>
                 </View>
 
@@ -47,7 +97,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail }: any) {
                     <TouchableOpacity>
                         <Image source={require('../assets/images/Play an Audio/prevSong.png')} style={styles.controlIcon} />
                     </TouchableOpacity>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handlePlayPause}>
                         <Image source={require('../assets/images/Play an Audio/Icon Button 3.png')} style={styles.playButton} />
                     </TouchableOpacity>
                     <TouchableOpacity>
