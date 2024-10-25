@@ -5,12 +5,12 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: any) {
 
     const songs = [
-        { id: "1", title: "FLOWER", artist: "Jessica Gonzalez", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 51.png"), Listens: "2.1M" },
-        { id: "2", title: "Shape of you", artist: "Anthony Taylor", duration: "03:35", image: require("../assets/images/Playlist Details - Audio Listing/Image 52.png"), Listens: "68M" },
-        { id: "3", title: "Blinding Lights", artist: "Brian Bailey", duration: "04:39", image: require("../assets/images/Playlist Details - Audio Listing/Image 53.png"), Listens: "93M" },
-        { id: "4", title: "Levitating", artist: "Anthony Taylor", duration: "07:48", image: require("../assets/images/Playlist Details - Audio Listing/Image 54.png"), Listens: "9M" },
-        { id: "5", title: "Astronaut in the Ocean", artist: "Pedro Moreno", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 55.png"), Listens: "23M" },
-        { id: "6", title: "Dynamine", artist: "Elena Jimenez", duration: "06:22", image: require("../assets/images/Playlist Details - Audio Listing/Image 56.png"), Listens: "10M" }
+        { id: "1", title: "Vì yêu", artist: "Kasim Hoàng Vũ", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 51.png"), Listens: "2.1M", uri: "https://vnso-zn-23-tf-a128-z3.zmdcdn.me/e34025d1786c49fcbc3da73ac7cad923?authen=exp=1730032880~acl=/e34025d1786c49fcbc3da73ac7cad923*~hmac=36162b27cf58abd048331d26f7ee1638"},
+        { id: "2", title: "careless whisper", artist: "George Michael", duration: "03:35", image: require("../assets/images/Playlist Details - Audio Listing/Image 52.png"), Listens: "68M", uri: "http://streaming.amusic.vn/amusic/songs/iphone/68/560188/560188.mp3" },
+        { id: "3", title: "Lẻ bóng", artist: "Vũ Tuấn", duration: "04:39", image: require("../assets/images/Playlist Details - Audio Listing/Image 53.png"), Listens: "93M", uri: "https://vnso-zn-24-tf-a128-z3.zmdcdn.me/5cf4a5538ea1984f6f8660d1dd769d26?authen=exp=1730036824~acl=/5cf4a5538ea1984f6f8660d1dd769d26*~hmac=9446f0b7dad7fdba196b8b15a42f7e7a" },
+        { id: "4", title: "Xa em kỉ niệm", artist: "Nathan Lee", duration: "07:48", image: require("../assets/images/Playlist Details - Audio Listing/Image 54.png"), Listens: "9M", uri: "https://vnso-zn-23-tf-a128-z3.zmdcdn.me/267d7c7fa9dc98a06b9c9aaebe5ded25?authen=exp=1730037009~acl=/267d7c7fa9dc98a06b9c9aaebe5ded25*~hmac=c796780564081a35ee295bdda8de5058" },
+        { id: "5", title: "Hãy về đây bên anh", artist: "Duy Mạnh", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 55.png"), Listens: "23M", uri: "https://vnso-pt-50-tf-a128-z3.zmdcdn.me/8909f138a145a5fd0b9fa5031cbaae8d?authen=exp=1730037209~acl=/8909f138a145a5fd0b9fa5031cbaae8d*~hmac=d4c2c87c7eb17fd88b4490a3b7bf644b" },
+        { id: "6", title: "Dynamine", artist: "Elena Jimenez", duration: "06:22", image: require("../assets/images/Playlist Details - Audio Listing/Image 56.png"), Listens: "10M", uri: "https://vnso-zn-23-tf-a128-z3.zmdcdn.me/e34025d1786c49fcbc3da73ac7cad923?authen=exp=1730032880~acl=/e34025d1786c49fcbc3da73ac7cad923*~hmac=36162b27cf58abd048331d26f7ee1638" }
     ];
 
     const [currentSong, setCurrentSong] = useState(songs[0]);
@@ -21,10 +21,11 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
         duration: string;
         image: any;
         Listens: string;
+        uri: string;
         onPress: () => void;
     };
 
-    const Song = ({ image, title, artist, Listens, duration, onPress}: songProps) => (
+    const Song = ({ image, title, artist, Listens, duration, uri, onPress}: songProps) => (
         <View style={styles.containerListSong}>
             <TouchableOpacity onPress={onPress}>
                 <Image style={{ height: 70, width: 70 }} source={image} />
@@ -115,6 +116,7 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
                             renderItem={({ item }) => (
                                 <Song image={item.image} title={item.title} artist={item.artist}
                                     Listens={item.Listens} duration={item.duration} 
+                                    uri={item.uri}
                                     onPress={() => setCurrentSong(item)} />
                             )}
                             keyExtractor={item => item.id}
@@ -144,7 +146,7 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
                         />
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={navigateToPlayAudio}>
+                    <TouchableOpacity onPress={() => navigateToPlayAudio(currentSong)}>
                         <Image
                             source={require('../assets/images/Playlist Details - Audio Listing/Icon Button 2.png')}
                             style={{ width: 50, height: 50, paddingLeft: 10 }}
