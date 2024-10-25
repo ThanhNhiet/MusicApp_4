@@ -9,6 +9,7 @@ import PlayAudioScreen from '../pages/PlayAudioScreen';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
+  const [selectedSong, setSelectedSong] = useState(null);
 
   const navigateToHome = () => {
     setCurrentScreen('Home');
@@ -26,9 +27,10 @@ export default function App() {
     setCurrentScreen('Search');
   };
 
-  const navigateToPlayAudio = () => {
+  const navigateToPlayAudio = (song: any) => {
     setCurrentScreen('PlayAudioScreen');
-  };
+    setSelectedSong(song); // Lưu bài hát hiện tại để truyền qua màn hình PlayAudioScreen
+};
 
   //back hardware button
   useEffect(() => {
@@ -49,7 +51,7 @@ export default function App() {
       {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} />}
       {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome} navigateToPlayAudio={navigateToPlayAudio}/>}
       {currentScreen === 'Search' && <Search />}
-      {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} />}
+      {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} song={selectedSong} />}
 
       {(currentScreen === 'Home' || currentScreen === 'Search' || currentScreen === 'PlaylistDetail') && (
         <TabBarMenu 
