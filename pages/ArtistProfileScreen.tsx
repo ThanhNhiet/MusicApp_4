@@ -29,6 +29,26 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
         Listens: string;
     };
 
+    const albums = [
+        { id: "1", title: 'Me', image: require("../assets/images/Artist Profile/Image 71.png") },
+        { id: "2", title: 'Magna nost', image: require("../assets/images/Artist Profile/Image 72.png") },
+        { id: "3", title: 'Proident nuke', image: require("../assets/images/Artist Profile/Image 77.png") },
+    ]
+    type albumProps = {
+        title: string;
+        image: any;
+    }
+
+    const recommends = [
+        { id: "1", title: 'Magna nost', image: require("../assets/images/Artist Profile/Image 74.png") },
+        { id: "2", title: 'Exerciatio', image: require("../assets/images/Artist Profile/Image 75.png") },
+        { id: "3", title: 'Tempor nate', image: require("../assets/images/Artist Profile/Image 76.png") },
+    ]
+    type recommendsProps = {
+        title: string;
+        image: any;
+    }
+
     const [artist, setArtist] = useState<artistProps | null>(null);
 
     useEffect(() => {
@@ -56,6 +76,26 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
             <TouchableOpacity>
                 <Image style={styles.img30} source={require("../assets/images/Artist Profile/moreIcon.png")} />
             </TouchableOpacity>
+        </View>
+    );
+
+    const Album = ({ image, title }: albumProps) => (
+        <View style={styles.paddingItem}>
+            <TouchableOpacity>
+                <Image source={image} />
+            </TouchableOpacity>
+            <Text style={{ fontWeight: '500' }}>{title}</Text>
+            <Text style={{ color: 'gray' }}>{artist?.name}</Text>
+        </View>
+    );
+
+    const Recommend = ({ image, title }: recommendsProps) => (
+        <View style={styles.paddingItem}>
+            <TouchableOpacity>
+                <Image source={image} />
+            </TouchableOpacity>
+            <Text style={{ fontWeight: '500' }}>{title}</Text>
+            <Text style={{ color: 'gray' }}>{artist?.name}</Text>
         </View>
     );
 
@@ -106,7 +146,7 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
                     </View>
 
                     <View style={styles.popularSongContainer}>
-                        <Text style={{fontSize: 20, fontWeight: 'bold', marginBottom: 10}}>Popular</Text>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Popular</Text>
                         <FlatList
                             data={songs}
                             renderItem={({ item }) => (
@@ -114,6 +154,45 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
                                     Listens={item.Listens} duration={item.duration}
                                 />
                             )}
+                            keyExtractor={item => item.id}
+                        />
+                    </View>
+
+                    <View style={styles.albumsContainer}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Albums</Text>
+                        <FlatList
+                            data={albums}
+                            renderItem={({ item }) => (
+                                <Album image={item.image} title={item.title}
+                                />
+                            )}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            keyExtractor={item => item.id}
+                        />
+                    </View>
+
+                    <View style={{ paddingHorizontal: 20, marginBottom: 10 }}>
+                        <Image source={require('../assets/images/Artist Profile/Image 73.png')} />
+                        <Text style={{color: 'gray'}}>I give to desire, and to duties, to work, is a cure, unless the pain of the result 
+                            is the pleasure of the two. I'll come to see who wants to rush to the market, some of
+                            them are a market with some pleasure to not a large market. Give them no
+                        </Text>
+                        <TouchableOpacity style={{marginTop: 5}}>
+                            <Text style={{color: 'blue', fontSize: 18, fontWeight: 'bold', textAlign: 'center'}}>View more</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={{paddingHorizontal: 20, marginBottom: 100}}>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Albums</Text>
+                        <FlatList
+                            data={recommends}
+                            renderItem={({ item }) => (
+                                <Album image={item.image} title={item.title}
+                                />
+                            )}
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
                             keyExtractor={item => item.id}
                         />
                     </View>
@@ -129,7 +208,6 @@ const styles = StyleSheet.create({
     },
     scrollcontainer: {
         flexGrow: 1,
-        marginBottom: 40,
     },
 
     //Header
@@ -188,6 +266,16 @@ const styles = StyleSheet.create({
 
     //Popular song
     popularSongContainer: {
-        padding: 20,
+        paddingHorizontal: 20,
+        marginBottom: 10,
+    },
+
+    //Albums
+    albumsContainer: {
+        paddingHorizontal: 20,
+        marginBottom: 10,
+    },
+    paddingItem: {
+        marginRight: 10,
     },
 });
