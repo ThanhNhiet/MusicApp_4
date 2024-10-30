@@ -3,7 +3,7 @@ import { BackHandler, View } from 'react-native';
 import TabBarMenu from '../components/TabBarMenu';
 import LaunchScreen from '../pages/LaunchScreen';
 import Home from '../pages/HomeScreen';
-import Search from '../pages/Search';
+import TestNav from '../pages/TestNavigation';
 import PlaylistDetail from '../pages/PlaylistDetail';
 import PlayAudioScreen from '../pages/PlayAudioScreen';
 
@@ -23,14 +23,14 @@ export default function App() {
     setCurrentScreen('PlaylistDetail');
   };
 
-  const navigateToSearch = () => {
+  const navigateToTestNav = () => {
     setCurrentScreen('Search');
   };
 
   const navigateToPlayAudio = (song: any) => {
     setCurrentScreen('PlayAudioScreen');
     setSelectedSong(song); // Lưu bài hát hiện tại để truyền qua màn hình PlayAudioScreen
-};
+  };
 
   //back hardware button
   useEffect(() => {
@@ -47,22 +47,28 @@ export default function App() {
 
   return (
     <View style={{ flex: 1 }}>
+
+      {/* Nếu currentScreen là LaunchScreen thì render thẻ LauchScreen.tsx đã được import */}
+      {/* Biến navigateToHome của LauchScreen.tsx sẽ gọi hàm navigateToHome của index để 
+        set currentScreen là Home và render màn hình HomeScreen.tsx*/}
       {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} />}
+
       {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} />}
-      {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome} navigateToPlayAudio={navigateToPlayAudio}/>}
-      {currentScreen === 'Search' && <Search />}
+      {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome} navigateToPlayAudio={navigateToPlayAudio} />}
+      {currentScreen === 'Search' && <TestNav />}
       {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} song={selectedSong} />}
 
+      {/* Các màn hình có tab bar menu */}
       {(currentScreen === 'Home' || currentScreen === 'Search' || currentScreen === 'PlaylistDetail') && (
-        <TabBarMenu 
-          activeTab={currentScreen} 
+        <TabBarMenu
+          activeTab={currentScreen}
           onTabPress={(tabName) => {
             if (tabName === 'Home') {
               navigateToHome();
-            } else if (tabName === 'Search') {
-              navigateToSearch();
+            } else if (tabName === 'Search') {  {/* Test nút search trên tabName */}
+              navigateToTestNav();
             }
-          }} 
+          }}
         />
       )}
     </View>
