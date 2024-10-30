@@ -72,6 +72,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
         }
     }
 
+    //Điều hướng trở lại playlist detail
     async function handleNavigateBack() {
         try {
             if (sound) {
