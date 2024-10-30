@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
-export default function Home({ navigateToPlayListDetail }: any) {
+export default function Home({ navigateToPlayListDetail, navigateToArtistProfile }: any) {
 
   const suggestions = [
     { id: '1', img: require("../assets/images/Home - Audio Listing/Container 26.png") },
@@ -38,6 +38,7 @@ export default function Home({ navigateToPlayListDetail }: any) {
   };
 
   type artistProps = {
+    id: string;
     name: string;
     img: any;
   };
@@ -70,9 +71,9 @@ export default function Home({ navigateToPlayListDetail }: any) {
     </View>
   );
 
-  const Artist = ({ name, img }: artistProps) => (
+  const Artist = ({id, name, img }: artistProps) => (
     <View style={styles.artistContainer}>
-      <TouchableOpacity>
+      <TouchableOpacity onPress={() => navigateToArtistProfile(id)}>
         <Image source={img} />
       </TouchableOpacity>
       <Text style={{ fontWeight: '500' }}>{name}</Text>
@@ -172,7 +173,7 @@ export default function Home({ navigateToPlayListDetail }: any) {
               horizontal
               data={artists}
               renderItem={({ item }) => (
-                <Artist img={item.img} name={item.name} />
+                <Artist id={item.id} img={item.img} name={item.name} />
               )}
               keyExtractor={item => item.id}
               showsHorizontalScrollIndicator={false}
