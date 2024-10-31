@@ -7,11 +7,14 @@ import TestNav from '../pages/TestNavigation';
 import PlaylistDetail from '../pages/PlaylistDetail';
 import PlayAudioScreen from '../pages/PlayAudioScreen';
 import ArtistProfile from '../pages/ArtistProfileScreen';
+import SearchResults from '../pages/SearchResults';
+import Feed from '../pages/FeedScreen';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
   const [selectedSong, setSelectedSong] = useState(null);
   const [idArtist, setIdArtist] = useState<string | null>(null);
+  const [search, setSearchText] = useState('');
 
   const navigateToHome = () => {
     setCurrentScreen('Home');
@@ -38,6 +41,14 @@ export default function App() {
     setCurrentScreen('ArtistProfile');
     setIdArtist(id);
   };
+  const navigateToSearchResults = (text) => {
+    setCurrentScreen('Searchresults');
+    setSearchText(text)
+  };
+  const navigateToFeed = () => {
+    setCurrentScreen('Feed');
+  };
+
 
   //back hardware button
   useEffect(() => {
@@ -62,13 +73,14 @@ export default function App() {
 
       {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} navigateToArtistProfile={navigateToArtistProfile}/>}
       {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome} navigateToPlayAudio={navigateToPlayAudio} />}
-      {currentScreen === 'Search' && <TestNav />}
+      {currentScreen === 'Search' && <TestNav navigateToSearchResults={navigateToSearchResults}/>}
       {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} song={selectedSong} />}
       {currentScreen === 'ArtistProfile' && idArtist && <ArtistProfile navigateToHome={navigateToHome} idArtist={idArtist}/>}
-
+      {currentScreen === 'Searchresults' && <SearchResults navigateToSearchResults={navigateToSearchResults} search={search} />}
+      {currentScreen === 'Feed' && <Feed  />}
       {/* Các màn hình có tab bar menu */}
       {(currentScreen === 'Home' || currentScreen === 'Search' || currentScreen === 'PlaylistDetail'
-        || currentScreen === 'ArtistProfile'
+        || currentScreen === 'ArtistProfile' || currentScreen === 'Searchresults' || currentScreen === 'Feed'
       ) && (
         <TabBarMenu
           activeTab={currentScreen}
@@ -78,6 +90,8 @@ export default function App() {
             } else if (tabName === 'Search') {
               {/* Test nút search trên tabName */ }
               navigateToTestNav();
+            } else if (tabName === 'Feed') {
+              navigateToFeed();
             }
           }}
         />
