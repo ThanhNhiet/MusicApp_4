@@ -9,6 +9,7 @@ import PlayAudioScreen from '../pages/PlayAudioScreen';
 import ArtistProfile from '../pages/ArtistProfileScreen';
 import SearchResults from '../pages/SearchResults';
 import Feed from '../pages/FeedScreen';
+import FeedComment  from '../pages/FeedComment';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
@@ -41,12 +42,15 @@ export default function App() {
     setCurrentScreen('ArtistProfile');
     setIdArtist(id);
   };
-  const navigateToSearchResults = (text) => {
+  const navigateToSearchResults = (text:string) => {
     setCurrentScreen('Searchresults');
     setSearchText(text)
   };
   const navigateToFeed = () => {
     setCurrentScreen('Feed');
+  };
+  const navigateToFeedComment = () => {
+    setCurrentScreen('Feedcomment');
   };
 
 
@@ -77,7 +81,8 @@ export default function App() {
       {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} song={selectedSong} />}
       {currentScreen === 'ArtistProfile' && idArtist && <ArtistProfile navigateToHome={navigateToHome} idArtist={idArtist}/>}
       {currentScreen === 'Searchresults' && <SearchResults navigateToSearchResults={navigateToSearchResults} search={search} />}
-      {currentScreen === 'Feed' && <Feed  />}
+      {currentScreen === 'Feed' && <Feed navigateToFeedComment={navigateToFeedComment} navigateToFeed={navigateToFeed} />}
+      {currentScreen === 'Feedcomment' && <FeedComment navigateFeedComment={navigateToFeedComment} navigateToFeed={navigateToFeed}/>}
       {/* Các màn hình có tab bar menu */}
       {(currentScreen === 'Home' || currentScreen === 'Search' || currentScreen === 'PlaylistDetail'
         || currentScreen === 'ArtistProfile' || currentScreen === 'Searchresults' || currentScreen === 'Feed'

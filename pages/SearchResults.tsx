@@ -11,9 +11,9 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 
-export default function SearchScreen ({navigateToSearchResults,search}) {
+export default function SearchScreen ({navigateToSearchResults,search}:{navigateToSearchResults:any,search:string}) {
   const [searchText,setSearchText] = useState(search);
-  const [filteredData,setFilteredData] = useState([]);
+  const [filteredData, setFilteredData] = useState<string[]>([]);
   const tabs = ['All', 'Tracks', 'Albums', 'Artists']; 
   const data = [
     "Me",
@@ -24,7 +24,7 @@ export default function SearchScreen ({navigateToSearchResults,search}) {
     "Me Exercitation",
     "Me Sint aliquip duis deseru"
   ];
-  const handleSearch = (text) => {
+  const handleSearch = (text:string) => {
     setSearchText(text);
     if (text) {
       const newData = data.filter(item => item.toLowerCase().includes(text.toLowerCase()));
@@ -143,7 +143,7 @@ export default function SearchScreen ({navigateToSearchResults,search}) {
       </View>
       {/* Results List */}
       <ScrollView style={{margin:10}}>
-      {searchResults.filter(item => item.duration =='') // Lọc các mục có `duration` khác null
+      {searchResults.filter(item => item.duration ==="") // Lọc các mục có `duration` khác null
          .map(item => (
             <View key={item.id} style={styles.resultItem}>
               <Image
@@ -285,6 +285,9 @@ const styles = StyleSheet.create({
   },
   moreButton: {
     padding: 8
+  },
+  clearIcon: {
+    marginLeft: 5,
   },
   moreButtonText: {
     color: '#666',

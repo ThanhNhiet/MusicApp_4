@@ -33,7 +33,7 @@ const posts = [
   },
 ];
 
-const Feed = () => {
+export default function FeedScreen  ({navigateToFeedComment}) {
   const renderPost = ({ item }) => (
   <View style={styles.postContainer}>
     <View style={styles.header}>
@@ -64,7 +64,7 @@ const Feed = () => {
         <Icon name="heart-outline" size={20} />
         <Text>{item.likes}</Text>
       </TouchableOpacity>
-      <TouchableOpacity style={styles.actionButton}>
+      <TouchableOpacity style={styles.actionButton} onPress={navigateToFeedComment}>
         <Icon name="comment-outline" size={20} />
         <Text>{item.comments}</Text>
       </TouchableOpacity>
@@ -167,5 +167,3 @@ const styles = StyleSheet.create({
   },
 });
 
-
-export default Feed;
