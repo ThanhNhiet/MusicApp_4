@@ -143,7 +143,7 @@ export default function SearchScreen ({navigateToSearchResults,search}:{navigate
       </View>
       {/* Results List */}
       <ScrollView style={{margin:10}}>
-      {searchResults.filter(item => item.duration ==="") // Lọc các mục có `duration` khác null
+      {searchResults.filter(item => item.duration ===null) // Lọc các mục có `duration` khác null
          .map(item => (
             <View key={item.id} style={styles.resultItem}>
               <Image
@@ -164,7 +164,7 @@ export default function SearchScreen ({navigateToSearchResults,search}:{navigate
               </TouchableOpacity>
             </View>
           ))}
-        {searchResults.filter(item => item.duration !=='') // Lọc các mục có `duration` khác null
+        {searchResults.filter(item => item.duration !==null) // Lọc các mục có `duration` khác null
          .map(item => (
             <View key={item.id} style={styles.resultItem}>
               <Image

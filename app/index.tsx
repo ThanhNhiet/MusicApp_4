@@ -10,6 +10,10 @@ import ArtistProfile from '../pages/ArtistProfileScreen';
 import SearchResults from '../pages/SearchResults';
 import Feed from '../pages/FeedScreen';
 import FeedComment  from '../pages/FeedComment';
+import LibraryScreen  from '../pages/LibraryScreen';
+import PlaylistScreen from '../pages/MyPlaylistsScreen';
+import SubscriptionPlans from '../pages/SubscriptionPlans';
+import LaunchPremiumScreen from '../pages/LaunchPremiumScreen';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
@@ -52,6 +56,19 @@ export default function App() {
   const navigateToFeedComment = () => {
     setCurrentScreen('Feedcomment');
   };
+  const navigateToLibrary = () => {
+    setCurrentScreen('Library');
+  };
+  const navigateToMylist = () => {
+    setCurrentScreen('MyList');
+  };
+  const navigateToSubPlans = () => {
+    setCurrentScreen('SubscriptionPlans');
+  };
+  const navigateToLaunchPremium = () => {
+    setCurrentScreen('LaunchPremiumScreen');
+  };
+
 
 
   //back hardware button
@@ -73,8 +90,7 @@ export default function App() {
       {/* Nếu currentScreen là LaunchScreen thì render thẻ LauchScreen.tsx đã được import */}
       {/* Biến navigateToHome của LauchScreen.tsx sẽ gọi hàm navigateToHome của index để 
         set currentScreen là Home và render màn hình HomeScreen.tsx*/}
-      {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} />}
-
+      {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} navigateToLaunchPremium={navigateToLaunchPremium} />}
       {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} navigateToArtistProfile={navigateToArtistProfile}/>}
       {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome} navigateToPlayAudio={navigateToPlayAudio} />}
       {currentScreen === 'Search' && <TestNav navigateToSearchResults={navigateToSearchResults}/>}
@@ -83,9 +99,13 @@ export default function App() {
       {currentScreen === 'Searchresults' && <SearchResults navigateToSearchResults={navigateToSearchResults} search={search} />}
       {currentScreen === 'Feed' && <Feed navigateToFeedComment={navigateToFeedComment} navigateToFeed={navigateToFeed} />}
       {currentScreen === 'Feedcomment' && <FeedComment navigateFeedComment={navigateToFeedComment} navigateToFeed={navigateToFeed}/>}
+      {currentScreen === 'Library' && <LibraryScreen navigateToLibrary={navigateToLibrary} navigateToMylist={navigateToMylist}/>}
+      {currentScreen === 'MyList' && <PlaylistScreen navigateToMylist={navigateToMylist}  navigateToLibrary={navigateToLibrary}  />}
+      {currentScreen === 'SubscriptionPlans' && <SubscriptionPlans  navigateToHome={navigateToHome} />}
+      {currentScreen === 'LaunchPremiumScreen' && <LaunchPremiumScreen   navigateToSubPlans={navigateToSubPlans}  />}
       {/* Các màn hình có tab bar menu */}
-      {(currentScreen === 'Home' || currentScreen === 'Search' || currentScreen === 'PlaylistDetail'
-        || currentScreen === 'ArtistProfile' || currentScreen === 'Searchresults' || currentScreen === 'Feed'
+      {(currentScreen === 'Home' || currentScreen === 'Library' || currentScreen === 'PlaylistDetail'
+        || currentScreen === 'ArtistProfile' || currentScreen === 'Searchresults' || currentScreen === 'Feed' || currentScreen === 'MyList'
       ) && (
         <TabBarMenu
           activeTab={currentScreen}
@@ -93,10 +113,11 @@ export default function App() {
             if (tabName === 'Home') {
               navigateToHome();
             } else if (tabName === 'Search') {
-              {/* Test nút search trên tabName */ }
               navigateToTestNav();
             } else if (tabName === 'Feed') {
               navigateToFeed();
+            } else if (tabName === 'Library') {
+              navigateToLibrary();
             }
           }}
         />

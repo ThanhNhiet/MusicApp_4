@@ -53,9 +53,9 @@ const comments = [
   },
 ];
 
-export default function FeedComment({navigateToFeed,navigateFeedComment}) {
-  const renderReplies = (replies) => (
-    replies.map((reply) => (
+export default function FeedComment({navigateToFeed,navigateFeedComment}:any) {
+  const renderReplies = (replies:any) => (
+    replies.map((reply:any) => (
       <View key={reply.id} style={[styles.commentContainer, styles.replyContainer]}>
         <Image source={reply.avatar} style={styles.avatar} />
         <View style={styles.commentContent}>
@@ -77,7 +77,7 @@ export default function FeedComment({navigateToFeed,navigateFeedComment}) {
     ))
   );
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: typeof comments[0] }) => (
     <View>
       <View style={styles.commentContainer}>
         <Image source={item.avatar} style={styles.avatar} />

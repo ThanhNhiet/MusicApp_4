@@ -3,9 +3,9 @@ import { View, Text,FlatList,TouchableOpacity,TextInput,StyleSheet} from 'react-
 import Icon from 'react-native-vector-icons/Ionicons';
 
 
-export default function SearchScreen ({navigateToSearchResults}) {
+export default function SearchScreen ({navigateToSearchResults}:any) {
 const [searchText,setSearchText] = useState('');
-const [filteredData,setFilteredData] = useState([]);
+const [filteredData, setFilteredData] = useState<string[]>([]);
 
   const data = [
     "Me",
@@ -17,7 +17,7 @@ const [filteredData,setFilteredData] = useState([]);
     "Me Sint aliquip duis deseru"
   ];
 
-  const handleSearch = (text) => {
+  const handleSearch = (text:string) => {
     setSearchText(text);
     if (text) {
       const newData = data.filter(item => item.toLowerCase().includes(text.toLowerCase()));
@@ -28,7 +28,7 @@ const [filteredData,setFilteredData] = useState([]);
   };
   
 
-  const renderItem = ({ item }) => (
+  const renderItem = ({ item }: { item: string }) => (
     <TouchableOpacity style={styles.item} onPress={()=>navigateToSearchResults(searchText)}>
       <Text>{item}</Text>
     </TouchableOpacity>

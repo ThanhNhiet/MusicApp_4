@@ -6,7 +6,7 @@ import { Image, ImageBackground, StyleSheet, Text, TouchableOpacity, View } from
 //   navigateToHome: () => void;
 // };
 
-export default function LaunchScreen({ navigateToHome }: any) {
+export default function LaunchScreen({ navigateToHome,navigateToLaunchPremium}: any) {
 
   return (
     <ImageBackground
@@ -21,7 +21,7 @@ export default function LaunchScreen({ navigateToHome }: any) {
           <Text style={styles.mainText}>Your artists</Text>
         </View>
 
-        <TouchableOpacity style={styles.createAccountButton}>
+        <TouchableOpacity style={styles.createAccountButton} onPress={navigateToLaunchPremium}>
           <Text style={styles.createAccountText}>Create an account</Text>
         </TouchableOpacity>
 

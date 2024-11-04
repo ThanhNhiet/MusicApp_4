@@ -33,8 +33,8 @@ const posts = [
   },
 ];
 
-export default function FeedScreen  ({navigateToFeedComment}) {
-  const renderPost = ({ item }) => (
+export default function FeedScreen  ({navigateToFeedComment}:any) {
+  const renderPost = ({ item }:any) => (
   <View style={styles.postContainer}>
     <View style={styles.header}>
       <Image style={styles.avatar} source={item.avatar} /> 
