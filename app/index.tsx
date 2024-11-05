@@ -105,7 +105,8 @@ export default function App() {
       {currentScreen === 'LaunchPremiumScreen' && <LaunchPremiumScreen   navigateToSubPlans={navigateToSubPlans}  />}
       {/* Các màn hình có tab bar menu */}
       {(currentScreen === 'Home' || currentScreen === 'Library' || currentScreen === 'PlaylistDetail'
-        || currentScreen === 'ArtistProfile' || currentScreen === 'Searchresults' || currentScreen === 'Feed' || currentScreen === 'MyList'
+        || currentScreen === 'ArtistProfile' || currentScreen === 'Search' || currentScreen === 'Searchresults' 
+        || currentScreen === 'Feed' || currentScreen === 'MyList'
       ) && (
         <TabBarMenu
           activeTab={currentScreen}
