@@ -1,67 +1,108 @@
+import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, FlatList } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
+const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 export default function ArtistProfile({ navigateToHome, idArtist }: { navigateToHome: any, idArtist: string }) {
 
-    const artists = [
-        { id: '1', name: 'Jennifer Wilson', img: require("../assets/images/Home - Audio Listing/Image 39.png") },
-        { id: '2', name: 'Elizabeth Hall', img: require("../assets/images/Home - Audio Listing/Image 40.png") },
-        { id: '3', name: 'Anthony Thow', img: require("../assets/images/Home - Audio Listing/Image 41.png") },
-    ];
+    // const artists = [
+    //     { id: '1', name: 'Jennifer Wilson', img: require("../assets/images/Home - Audio Listing/Image 39.png") },
+    //     { id: '2', name: 'Elizabeth Hall', img: require("../assets/images/Home - Audio Listing/Image 40.png") },
+    //     { id: '3', name: 'Anthony Thow', img: require("../assets/images/Home - Audio Listing/Image 41.png") },
+    // ];
+    const [artists, setArtists] = useState<artistProps[]>([]);
     type artistProps = {
         id: string;
         name: string;
-        img: any;
+        img: string;
     };
 
-    const songs = [
-        { id: "1", title: "Let you free", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 51.png"), Listens: "2.1M" },
-        { id: "2", title: "Blinding Lights", duration: "03:35", image: require("../assets/images/Playlist Details - Audio Listing/Image 52.png"), Listens: "68M" },
-        { id: "3", title: "Levitating", duration: "04:39", image: require("../assets/images/Playlist Details - Audio Listing/Image 53.png"), Listens: "93M" },
-        { id: "4", title: "Astronaut in the Ocean", duration: "07:48", image: require("../assets/images/Playlist Details - Audio Listing/Image 54.png"), Listens: "9M" },
-        { id: "5", title: "Dyamite", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 55.png"), Listens: "23M" }
-    ];
+    // const songs = [
+    //     { id: "1", title: "Let you free", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 51.png"), Listens: "2.1M" },
+    //     { id: "2", title: "Blinding Lights", duration: "03:35", image: require("../assets/images/Playlist Details - Audio Listing/Image 52.png"), Listens: "68M" },
+    //     { id: "3", title: "Levitating", duration: "04:39", image: require("../assets/images/Playlist Details - Audio Listing/Image 53.png"), Listens: "93M" },
+    //     { id: "4", title: "Astronaut in the Ocean", duration: "07:48", image: require("../assets/images/Playlist Details - Audio Listing/Image 54.png"), Listens: "9M" },
+    //     { id: "5", title: "Dyamite", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 55.png"), Listens: "23M" }
+    // ];
+    const [songs, setSongs] = useState<songProps[]>([]);
     type songProps = {
+        id: string;
         title: string;
         duration: string;
-        image: any;
+        image: string;
         Listens: string;
+        artist_id: string;
     };
 
-    const albums = [
-        { id: "1", title: 'Me', image: require("../assets/images/Artist Profile/Image 71.png") },
-        { id: "2", title: 'Magna nost', image: require("../assets/images/Artist Profile/Image 72.png") },
-        { id: "3", title: 'Proident nuke', image: require("../assets/images/Artist Profile/Image 77.png") },
-    ]
+    // const albums = [
+    //     { id: "1", title: 'Me', image: require("../assets/images/Artist Profile/Image 71.png") },
+    //     { id: "2", title: 'Magna nost', image: require("../assets/images/Artist Profile/Image 72.png") },
+    //     { id: "3", title: 'Proident nuke', image: require("../assets/images/Artist Profile/Image 77.png") },
+    // ]
+    const [albums, setAlbums] = useState<albumProps[]>([]);
     type albumProps = {
+        id: string;
         title: string;
-        image: any;
+        img: string;
     }
 
-    const recommends = [
-        { id: "1", title: 'Magna nost', image: require("../assets/images/Artist Profile/Image 74.png") },
-        { id: "2", title: 'Exerciatio', image: require("../assets/images/Artist Profile/Image 75.png") },
-        { id: "3", title: 'Tempor nate', image: require("../assets/images/Artist Profile/Image 76.png") },
-    ]
+    // const recommends = [
+    //     { id: "1", title: 'Magna nost', image: require("../assets/images/Artist Profile/Image 74.png") },
+    //     { id: "2", title: 'Exerciatio', image: require("../assets/images/Artist Profile/Image 75.png") },
+    //     { id: "3", title: 'Tempor nate', image: require("../assets/images/Artist Profile/Image 76.png") },
+    // ]
+    const [recommends, setRecommends] = useState<recommendsProps[]>([]);
     type recommendsProps = {
+        id: string;
         title: string;
-        image: any;
+        image: string;
     }
 
-    const [artist, setArtist] = useState<artistProps | null>(null);
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(api);
+
+            const dataArtists = response.data.find((item: any) => item.artists);
+            if (dataArtists && dataArtists.artists) {
+                setArtists(dataArtists.artists);
+            }
+
+            const dataAlbum = response.data.find((item: any) => item.albums);
+            if (dataAlbum && dataAlbum.albums) {
+                setAlbums(dataAlbum.albums);
+            }
+
+            const dataRecommends = response.data.find((item: any) => item.recommends);
+            if (dataRecommends && dataRecommends.recommends) {
+                setRecommends(dataRecommends.recommends);
+            }
+
+            const dataSongs = response.data.find((item: any) => item.songs);
+            if (dataSongs && dataSongs.songs) {
+                setSongs(dataSongs.songs);
+            }
+        } catch (error) {
+            console.error("Error fetching songs:", error);
+        }
+    };
 
     useEffect(() => {
-        if (idArtist) {
+        fetchData();
+    }, []);
+
+    const [artist, setArtist] = useState<artistProps | null>(null);
+    useEffect(() => {
+        if (idArtist && artists.length > 0) {
             const artistFound = artists.find((artist) => artist.id === idArtist);
             setArtist(artistFound || null);
         }
-    }, [idArtist]);
+    }, [idArtist, artists]);
 
     const Song = ({ image, title, Listens, duration }: songProps) => (
         <View style={styles.containerListSong}>
             <TouchableOpacity>
-                <Image style={{ height: 70, width: 70 }} source={image} />
+                <Image style={{ height: 70, width: 70 }} source={{uri: image}} />
             </TouchableOpacity>
 
             <View style={{ marginLeft: 10, flex: 1 }}>
@@ -79,10 +120,10 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
         </View>
     );
 
-    const Album = ({ image, title }: albumProps) => (
+    const Album = ({ img, title }: albumProps) => (
         <View style={styles.paddingItem}>
             <TouchableOpacity>
-                <Image source={image} />
+                <Image source={{uri: img}} style={{height: 150, width: 150}}/>
             </TouchableOpacity>
             <Text style={{ fontWeight: '500' }}>{title}</Text>
             <Text style={{ color: 'gray' }}>{artist?.name}</Text>
@@ -92,7 +133,7 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
     const Recommend = ({ image, title }: recommendsProps) => (
         <View style={styles.paddingItem}>
             <TouchableOpacity>
-                <Image source={image} />
+                <Image source={{uri: image}} style={{height: 150, width: 150}}/>
             </TouchableOpacity>
             <Text style={{ fontWeight: '500' }}>{title}</Text>
             <Text style={{ color: 'gray' }}>{artist?.name}</Text>
@@ -110,7 +151,7 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
                     </View>
 
                     <View style={styles.avatarContainer}>
-                        <Image style={styles.avatar} source={artist?.img} />
+                        <Image style={styles.avatar} source={{ uri: artist?.img }} />
                         <Text style={styles.artistName}>{artist?.name}</Text>
                         <Text style={{ color: 'gray' }}>65.1K Followers</Text>
                     </View>
@@ -150,8 +191,7 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
                         <FlatList
                             data={songs}
                             renderItem={({ item }) => (
-                                <Song image={item.image} title={item.title}
-                                    Listens={item.Listens} duration={item.duration}
+                                <Song id={item.id} artist_id={item.artist_id} image={item.image} title={item.title} Listens={item.Listens} duration={item.duration}
                                 />
                             )}
                             keyExtractor={item => item.id}
@@ -163,7 +203,7 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
                         <FlatList
                             data={albums}
                             renderItem={({ item }) => (
-                                <Album image={item.image} title={item.title}
+                                <Album id={item.id} img={item.img} title={item.title}
                                 />
                             )}
                             horizontal
@@ -174,21 +214,21 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
 
                     <View style={{ paddingHorizontal: 20, marginBottom: 10 }}>
                         <Image source={require('../assets/images/Artist Profile/Image 73.png')} />
-                        <Text style={{color: 'gray'}}>I give to desire, and to duties, to work, is a cure, unless the pain of the result 
+                        <Text style={{ color: 'gray' }}>I give to desire, and to duties, to work, is a cure, unless the pain of the result
                             is the pleasure of the two. I'll come to see who wants to rush to the market, some of
                             them are a market with some pleasure to not a large market. Give them no
                         </Text>
-                        <TouchableOpacity style={{marginTop: 5}}>
-                            <Text style={{color: 'blue', fontSize: 18, fontWeight: 'bold', textAlign: 'center'}}>View more</Text>
+                        <TouchableOpacity style={{ marginTop: 5 }}>
+                            <Text style={{ color: 'blue', fontSize: 18, fontWeight: 'bold', textAlign: 'center' }}>View more</Text>
                         </TouchableOpacity>
                     </View>
 
-                    <View style={{paddingHorizontal: 20, marginBottom: 100}}>
+                    <View style={{ paddingHorizontal: 20, marginBottom: 100 }}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Albums</Text>
                         <FlatList
                             data={recommends}
                             renderItem={({ item }) => (
-                                <Album image={item.image} title={item.title}
+                                <Recommend id={item.id} image={item.image} title={item.title}
                                 />
                             )}
                             horizontal
