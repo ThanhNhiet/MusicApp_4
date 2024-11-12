@@ -3,7 +3,7 @@ import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View }
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import axios from "axios";
 
-const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/songs";
+const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
 type songProps = {
     id: string;
@@ -24,10 +24,16 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
     const fetchSongs = async () => {
         try {
             const response = await axios.get(api);
-            setSongs(response.data);
-            setCurrentSong(response.data[0]); // Đặt bài hát đầu tiên làm bài hát hiện tại
+            const dataWithSongs = response.data.find((item: any) => item.songs);
+
+            if (dataWithSongs && dataWithSongs.songs) {
+                setSongs(dataWithSongs.songs);
+                if (dataWithSongs.songs.length > 0) {
+                    setCurrentSong(dataWithSongs.songs[0]);
+                }
+            }
         } catch (error) {
-            console.error(error);
+            console.error("Error fetching songs:", error);
         }
     };
 
@@ -137,35 +143,35 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
 
                 </ScrollView>
 
-                {currentSong &&(
-                <View style={styles.containerPlaying}>
-                    <Image
-                        source={{ uri: currentSong.image }}
-                        style={{ width: 50, height: 50 }}
-                    />
-                    <View style={{ flex: 1, marginLeft: 10 }}>
-                        <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>{currentSong.title}</Text>
-                        <View style={styles.artistContainer}>
-                            <Text style={styles.artistInfo}>Me</Text>
-                            <Text style={styles.artistInfo}> ● </Text>
-                            <Text style={styles.artistInfo}>{currentSong.artist}</Text>
+                {currentSong && (
+                    <View style={styles.containerPlaying}>
+                        <Image
+                            source={{ uri: currentSong.image }}
+                            style={{ width: 50, height: 50 }}
+                        />
+                        <View style={{ flex: 1, marginLeft: 10 }}>
+                            <Text style={{ fontSize: 16, fontWeight: 'bold', color: 'white' }}>{currentSong.title}</Text>
+                            <View style={styles.artistContainer}>
+                                <Text style={styles.artistInfo}>Me</Text>
+                                <Text style={styles.artistInfo}> ● </Text>
+                                <Text style={styles.artistInfo}>{currentSong.artist}</Text>
+                            </View>
                         </View>
+
+                        <TouchableOpacity>
+                            <Image
+                                source={require('../assets/images/Playlist Details - Audio Listing/favoriteIcon.png')}
+                                style={{ width: 30, height: 30, tintColor: 'white' }}
+                            />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity onPress={() => navigateToPlayAudio(currentSong)}>
+                            <Image
+                                source={require('../assets/images/Playlist Details - Audio Listing/Icon Button 2.png')}
+                                style={{ width: 50, height: 50, paddingLeft: 10 }}
+                            />
+                        </TouchableOpacity>
                     </View>
-
-                    <TouchableOpacity>
-                        <Image
-                            source={require('../assets/images/Playlist Details - Audio Listing/favoriteIcon.png')}
-                            style={{ width: 30, height: 30, tintColor: 'white' }}
-                        />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={() => navigateToPlayAudio(currentSong)}>
-                        <Image
-                            source={require('../assets/images/Playlist Details - Audio Listing/Icon Button 2.png')}
-                            style={{ width: 50, height: 50, paddingLeft: 10 }}
-                        />
-                    </TouchableOpacity>
-                </View>
                 )}
             </SafeAreaView>
         </SafeAreaProvider>

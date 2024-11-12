@@ -4,7 +4,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Text, ImageBackground, Alert
 import { Audio } from 'expo-av';
 import axios from 'axios';
 
-const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/songs";
+const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
 type songProps = {
     id: string;
@@ -28,10 +28,13 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
     const fetchSongs = async () => {
         try {
             const response = await axios.get(api);
-            setSongs(response.data);
-            setCurrentSong(response.data[0]); // Đặt bài hát đầu tiên làm bài hát hiện tại
+            const dataWithSongs = response.data.find((item: any) => item.songs);
+
+            if (dataWithSongs && dataWithSongs.songs) {
+                setSongs(dataWithSongs.songs);
+            }
         } catch (error) {
-            console.error(error);
+            console.error("Error fetching songs:", error);
         }
     };
 

@@ -1,13 +1,35 @@
-import React, { useState } from 'react';
+import axios from 'axios';
+import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 
 export default function Home({ navigateToPlayListDetail, navigateToArtistProfile }: any) {
+  const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
-  const suggestions = [
-    { id: '1', img: require("../assets/images/Home - Audio Listing/Container 26.png") },
-    { id: '2', img: require("../assets/images/Home - Audio Listing/Container 27.png") },
-  ];
+  type suggestionProps = {
+    id: string;
+    image: string;
+  };
+  const [suggestions, setSuggestions] = useState<suggestionProps[]>([]);
+
+  const fetchSuggestion = async () => {
+    try {
+      const response = await axios.get(api);
+      const data = response.data.find((item: any) => item.suggestions);
+
+      if (data && data.suggestions) {
+        setSuggestions(data.suggestions);
+      }
+    } catch (error) {
+      console.error("Error fetching songs:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchSuggestion();
+  }, []);
+
+
   const charts = [
     { id: '1', name: 'Daily chart-toppers', status: 'update', img: require("../assets/images/Home - Audio Listing/Container 31.png") },
     { id: '2', name: 'Daily chart-toppers', status: 'update', img: require("../assets/images/Home - Audio Listing/Container 32.png") },
@@ -43,10 +65,10 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
     img: any;
   };
 
-  const Suggestion = ({ img }: any) => (
+  const Suggestion = ({ id, image }: suggestionProps) => (
     <View style={styles.paddingItem}>
       <TouchableOpacity>
-        <Image source={img} />
+        <Image source={{ uri: image }} style={{ height: 300, width: 300 }} />
       </TouchableOpacity>
     </View>
   );
@@ -71,7 +93,7 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
     </View>
   );
 
-  const Artist = ({id, name, img }: artistProps) => (
+  const Artist = ({ id, name, img }: artistProps) => (
     <View style={styles.artistContainer}>
       <TouchableOpacity onPress={() => navigateToArtistProfile(id)}>
         <Image source={img} />
@@ -118,10 +140,10 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
               style={{ marginTop: 5 }}
               horizontal
               data={suggestions}
-              renderItem={({ item }) => (
-                <Suggestion img={item.img} />
+              renderItem={({ item }: any) => (
+                <Suggestion id={item.id} image={item.image} />
               )}
-              keyExtractor={item => item.id}
+              keyExtractor={(item) => item.id}
               showsHorizontalScrollIndicator={false}
             />
           </View>
@@ -162,7 +184,7 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
             />
           </View>
 
-          <View style={[styles.sectionContainer, {height: 300}]}>
+          <View style={[styles.sectionContainer, { height: 300 }]}>
             <View style={styles.titleContainer}>
               <Text style={styles.sectionTitle}>Popular artists</Text>
               <TouchableOpacity>
