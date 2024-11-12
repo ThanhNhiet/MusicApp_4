@@ -1,34 +1,46 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import axios from "axios";
+
+const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/songs";
+
+type songProps = {
+    id: string;
+    title: string;
+    artist: string;
+    duration: string;
+    image: string;
+    Listens: string;
+    uri: string;
+    onPress: () => void;
+};
 
 export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: any) {
 
-    const songs = [
-        { id: "1", title: "Vì yêu", artist: "Kasim Hoàng Vũ", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 51.png"), Listens: "2.1M", uri: "http://streaming.amusic.vn/amusic/songs/iphone/24/198328/198328.mp3"},
-        { id: "2", title: "careless whisper", artist: "George Michael", duration: "03:35", image: require("../assets/images/Playlist Details - Audio Listing/Image 52.png"), Listens: "68M", uri: "http://streaming.amusic.vn/amusic/songs/iphone/68/560188/560188.mp3" },
-        { id: "3", title: "Lẻ bóng", artist: "Vũ Tuấn", duration: "04:39", image: require("../assets/images/Playlist Details - Audio Listing/Image 53.png"), Listens: "93M", uri: "https://vnso-zn-24-tf-a128-z3.zmdcdn.me/5cf4a5538ea1984f6f8660d1dd769d26?authen=exp=1730036824~acl=/5cf4a5538ea1984f6f8660d1dd769d26*~hmac=9446f0b7dad7fdba196b8b15a42f7e7a" },
-        { id: "4", title: "Xa em kỉ niệm", artist: "Nathan Lee", duration: "07:48", image: require("../assets/images/Playlist Details - Audio Listing/Image 54.png"), Listens: "9M", uri: "https://vnso-zn-23-tf-a128-z3.zmdcdn.me/267d7c7fa9dc98a06b9c9aaebe5ded25?authen=exp=1730037009~acl=/267d7c7fa9dc98a06b9c9aaebe5ded25*~hmac=c796780564081a35ee295bdda8de5058" },
-        { id: "5", title: "Hãy về đây bên anh", artist: "Duy Mạnh", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 55.png"), Listens: "23M", uri: "http://streaming.amusic.vn/amusic/songs/web1/79/648480/648480.mp3"},
-        { id: "6", title: "Dynamine", artist: "Elena Jimenez", duration: "06:22", image: require("../assets/images/Playlist Details - Audio Listing/Image 56.png"), Listens: "10M", uri: "http://streaming.amusic.vn/amusic/songs/iphone/24/198328/198328.mp3" }
-    ];
+    const [songs, setSongs] = useState<songProps[]>([]);
+    const [currentSong, setCurrentSong] = useState<songProps | null>(null);
 
-    const [currentSong, setCurrentSong] = useState(songs[0]);
-
-    type songProps = {
-        title: string;
-        artist: string;
-        duration: string;
-        image: any;
-        Listens: string;
-        uri: string;
-        onPress: () => void;
+    const fetchSongs = async () => {
+        try {
+            const response = await axios.get(api);
+            setSongs(response.data);
+            setCurrentSong(response.data[0]); // Đặt bài hát đầu tiên làm bài hát hiện tại
+        } catch (error) {
+            console.error(error);
+        }
     };
 
-    const Song = ({ image, title, artist, Listens, duration, uri, onPress}: songProps) => (
+    useEffect(() => {
+        fetchSongs();
+    }, []);
+
+
+
+    const Song = ({ id, image, title, artist, Listens, duration, uri, onPress }: songProps) => (
         <View style={styles.containerListSong}>
             <TouchableOpacity onPress={onPress}>
-                <Image style={{ height: 70, width: 70 }} source={image} />
+                <Image style={{ height: 70, width: 70 }} source={{ uri: image }} />
             </TouchableOpacity>
 
             <View style={{ marginLeft: 10, flex: 1 }}>
@@ -113,21 +125,22 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
                     <View style={{ padding: 20 }}>
                         <FlatList
                             data={songs}
-                            renderItem={({ item }) => (
-                                <Song image={item.image} title={item.title} artist={item.artist}
-                                    Listens={item.Listens} duration={item.duration} 
+                            renderItem={({ item }: any) => (
+                                <Song id={item.id} image={item.image} title={item.title} artist={item.artist}
+                                    Listens={item.Listens} duration={item.duration}
                                     uri={item.uri}
                                     onPress={() => setCurrentSong(item)} />
                             )}
-                            keyExtractor={item => item.id}
+                            keyExtractor={(item) => item.id}
                         />
                     </View>
 
                 </ScrollView>
 
+                {currentSong &&(
                 <View style={styles.containerPlaying}>
                     <Image
-                        source={currentSong.image}
+                        source={{ uri: currentSong.image }}
                         style={{ width: 50, height: 50 }}
                     />
                     <View style={{ flex: 1, marginLeft: 10 }}>
@@ -153,7 +166,7 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
                         />
                     </TouchableOpacity>
                 </View>
-
+                )}
             </SafeAreaView>
         </SafeAreaProvider>
     );

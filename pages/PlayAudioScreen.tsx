@@ -2,32 +2,42 @@ import { Route } from 'expo-router/build/Route';
 import React, { useEffect, useState } from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Text, ImageBackground, Alert } from 'react-native';
 import { Audio } from 'expo-av';
+import axios from 'axios';
+
+const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/songs";
+
+type songProps = {
+    id: string;
+    title: string;
+    artist: string;
+    duration: string;
+    image: string;
+    Listens: string;
+    uri: string;
+    onPress: () => void;
+};
 
 export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any) {
 
-    const songs = [
-        { id: "1", title: "Vì yêu", artist: "Kasim Hoàng Vũ", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 51.png"), Listens: "2.1M", uri: "http://streaming.amusic.vn/amusic/songs/iphone/24/198328/198328.mp3" },
-        { id: "2", title: "careless whisper", artist: "George Michael", duration: "03:35", image: require("../assets/images/Playlist Details - Audio Listing/Image 52.png"), Listens: "68M", uri: "http://streaming.amusic.vn/amusic/songs/iphone/68/560188/560188.mp3" },
-        { id: "3", title: "Lẻ bóng", artist: "Vũ Tuấn", duration: "04:39", image: require("../assets/images/Playlist Details - Audio Listing/Image 53.png"), Listens: "93M", uri: "https://vnso-zn-24-tf-a128-z3.zmdcdn.me/5cf4a5538ea1984f6f8660d1dd769d26?authen=exp=1730036824~acl=/5cf4a5538ea1984f6f8660d1dd769d26*~hmac=9446f0b7dad7fdba196b8b15a42f7e7a" },
-        { id: "4", title: "Xa em kỉ niệm", artist: "Nathan Lee", duration: "07:48", image: require("../assets/images/Playlist Details - Audio Listing/Image 54.png"), Listens: "9M", uri: "https://vnso-zn-23-tf-a128-z3.zmdcdn.me/267d7c7fa9dc98a06b9c9aaebe5ded25?authen=exp=1730037009~acl=/267d7c7fa9dc98a06b9c9aaebe5ded25*~hmac=c796780564081a35ee295bdda8de5058" },
-        { id: "5", title: "Hãy về đây bên anh", artist: "Duy Mạnh", duration: "03:36", image: require("../assets/images/Playlist Details - Audio Listing/Image 55.png"), Listens: "23M", uri: "http://streaming.amusic.vn/amusic/songs/web1/79/648480/648480.mp3" },
-        { id: "6", title: "Dynamine", artist: "Elena Jimenez", duration: "06:22", image: require("../assets/images/Playlist Details - Audio Listing/Image 56.png"), Listens: "10M", uri: "http://streaming.amusic.vn/amusic/songs/iphone/24/198328/198328.mp3" }
-    ];
-
-    type songProps = {
-        title: string;
-        artist: string;
-        duration: string;
-        image: any;
-        Listens: string;
-        uri: string;
-        onPress: () => void;
-    };
-
-    const [currentSong, setCurrentSong] = useState(songs[0]);
+    const [songs, setSongs] = useState<songProps[]>([]);
+    const [currentSong, setCurrentSong] = useState<songProps | null>(null);
     const [sound, setSound] = useState<Audio.Sound | null>(null); //use state quan ly am thanh
     const [isPlaying, setIsPlaying] = useState(false); //Trang thai phat nhac
     const [PPicon, setPPicon] = useState(require('../assets/images/Play an Audio/playIcon.png'))
+
+    const fetchSongs = async () => {
+        try {
+            const response = await axios.get(api);
+            setSongs(response.data);
+            setCurrentSong(response.data[0]); // Đặt bài hát đầu tiên làm bài hát hiện tại
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    useEffect(() => {
+        fetchSongs();
+    }, []);
 
     useEffect(() => {
         if (song) {
@@ -46,13 +56,17 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
         try {
             if (sound === null) {
                 // Tạo sound mới nếu chưa có sound
-                const { sound: newSound } = await Audio.Sound.createAsync({
-                    uri: currentSong.uri,
-                });
-                setSound(newSound);
-                setIsPlaying(true); // Đang phát nhạc
-                setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'))
-                await newSound.playAsync();
+                if (currentSong && currentSong.uri) { // Kiểm tra xem currentSong và URI không phải null
+                    const { sound: newSound } = await Audio.Sound.createAsync(
+                        { uri: currentSong.uri }
+                    );
+                    setSound(newSound);
+                    setIsPlaying(true); // Đang phát nhạc
+                    setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
+                    await newSound.playAsync();
+                } else {
+                    throw new Error("No song selected");
+                }
             } else {
                 // Nếu đã có sound, kiểm tra xem đang phát hay tạm dừng
                 if (isPlaying) {
@@ -91,6 +105,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
     async function handleNext() {
         try {
             // Tìm chỉ số hiện tại của currentSong trong danh sách songs
+            if (!currentSong) throw new Error("No song selected");
             const currentIndex = songs.findIndex(song => song.id === currentSong.id);
 
             // Tính chỉ số bài hát tiếp theo
@@ -119,6 +134,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
     async function handlePrev() {
         try {
             // Tìm chỉ số hiện tại của currentSong trong danh sách songs
+            if (!currentSong) throw new Error("No song selected");
             const currentIndex = songs.findIndex(song => song.id === currentSong.id);
 
             // Tính chỉ số bài hát trước đó
@@ -162,25 +178,26 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
             <View style={styles.mainContent}>
 
                 {/* Info */}
-                <View style={styles.infoContainer}>
-                    <View>
-                        <Text style={styles.songTitle}>{currentSong.title}</Text>
-                        <Text style={styles.artist}>{currentSong.artist}</Text>
+                {(currentSong &&
+                    <View style={styles.infoContainer}>
+                        <View>
+                            <Text style={styles.songTitle}>{currentSong.title}</Text>
+                            <Text style={styles.artist}>{currentSong.artist}</Text>
+                        </View>
+
+                        {/* Audio wave image */}
+                        <Image
+                            source={require('../assets/images/Play an Audio/Group 4.png')}
+                            style={styles.audioWave}
+                        />
+
+                        {/* Time display */}
+                        <View style={styles.timeContainer}>
+                            <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>0:06</Text>
+                            <Text style={styles.timeText}>{currentSong.duration}</Text>
+                        </View>
                     </View>
-
-                    {/* Audio wave image */}
-                    <Image
-                        source={require('../assets/images/Play an Audio/Group 4.png')}
-                        style={styles.audioWave}
-                    />
-
-                    {/* Time display */}
-                    <View style={styles.timeContainer}>
-                        <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>0:06</Text>
-                        <Text style={styles.timeText}>{currentSong.duration}</Text>
-                    </View>
-                </View>
-
+                )}
                 {/* Controls */}
                 <View style={styles.controlsContainer}>
                     <TouchableOpacity>
