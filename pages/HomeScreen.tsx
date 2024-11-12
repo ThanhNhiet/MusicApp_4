@@ -6,19 +6,56 @@ import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 export default function Home({ navigateToPlayListDetail, navigateToArtistProfile }: any) {
   const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
+  const [suggestions, setSuggestions] = useState<suggestionProps[]>([]);
   type suggestionProps = {
     id: string;
     image: string;
   };
-  const [suggestions, setSuggestions] = useState<suggestionProps[]>([]);
+
+  const [artists, setArtists] = useState<artistProps[]>([]);
+  type artistProps = {
+    id: string;
+    name: string;
+    img: string;
+  };
+
+  const [albums, setAlbums] = useState<albumProps[]>([]);
+  type albumProps = {
+    id: string;
+    name: string;
+    artist: string;
+    img: string;
+  };
+
+  const [charts, setCharts] = useState<chartProps[]>([]);
+  type chartProps = {
+    id: string;
+    name: string;
+    status: string;
+    img: string;
+  };
 
   const fetchSuggestion = async () => {
     try {
       const response = await axios.get(api);
-      const data = response.data.find((item: any) => item.suggestions);
+      const dataSuggest = response.data.find((item: any) => item.suggestions);
+      if (dataSuggest && dataSuggest.suggestions) {
+        setSuggestions(dataSuggest.suggestions);
+      }
 
-      if (data && data.suggestions) {
-        setSuggestions(data.suggestions);
+      const dataArtist = response.data.find((item: any) => item.artists);
+      if (dataArtist && dataArtist.artists) {
+        setArtists(dataArtist.artists);
+      }
+
+      const dataAlbum = response.data.find((item: any) => item.albums);
+      if (dataAlbum && dataAlbum.albums) {
+        setAlbums(dataAlbum.albums);
+      }
+
+      const dataChart = response.data.find((item: any) => item.charts);
+      if (dataChart && dataChart.charts) {
+        setCharts(dataChart.charts);
       }
     } catch (error) {
       console.error("Error fetching songs:", error);
@@ -30,40 +67,21 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
   }, []);
 
 
-  const charts = [
-    { id: '1', name: 'Daily chart-toppers', status: 'update', img: require("../assets/images/Home - Audio Listing/Container 31.png") },
-    { id: '2', name: 'Daily chart-toppers', status: 'update', img: require("../assets/images/Home - Audio Listing/Container 32.png") },
-    { id: '3', name: 'Daily chart-toppers', status: 'update', img: require("../assets/images/Home - Audio Listing/Container 33.png") },
-  ];
-  const albums = [
-    { id: '1', name: 'ME', artist: 'Jessica Gonzalez', img: require("../assets/images/Home - Audio Listing/Image 45.png") },
-    { id: '2', name: 'Magna nost', artist: 'Brian Thomas', img: require("../assets/images/Home - Audio Listing/Image 46.png") },
-    { id: '3', name: 'Magna noow', artist: 'Christoph Krammer', img: require("../assets/images/Home - Audio Listing/Image 47.png") },
-  ];
-  const artists = [
-    { id: '1', name: 'Jennifer Wilson', img: require("../assets/images/Home - Audio Listing/Image 39.png") },
-    { id: '2', name: 'Elizabeth Hall', img: require("../assets/images/Home - Audio Listing/Image 40.png") },
-    { id: '3', name: 'Anthony Thow', img: require("../assets/images/Home - Audio Listing/Image 41.png") },
-  ];
-
-  type chartProps = {
-    id: string;
-    name: string;
-    status: string;
-    img: any;
-  };
-
-  type albumProps = {
-    name: string;
-    artist: string;
-    img: any;
-  };
-
-  type artistProps = {
-    id: string;
-    name: string;
-    img: any;
-  };
+  // const charts = [
+  //   { id: '1', name: 'Daily chart-toppers', status: 'update', img: require("../assets/images/Home - Audio Listing/Container 31.png") },
+  //   { id: '2', name: 'Daily chart-toppers', status: 'update', img: require("../assets/images/Home - Audio Listing/Container 32.png") },
+  //   { id: '3', name: 'Daily chart-toppers', status: 'update', img: require("../assets/images/Home - Audio Listing/Container 33.png") },
+  // ];
+  // const albums = [
+  //   { id: '1', name: 'ME', artist: 'Jessica Gonzalez', img: require("../assets/images/Home - Audio Listing/Image 45.png") },
+  //   { id: '2', name: 'Magna nost', artist: 'Brian Thomas', img: require("../assets/images/Home - Audio Listing/Image 46.png") },
+  //   { id: '3', name: 'Magna noow', artist: 'Christoph Krammer', img: require("../assets/images/Home - Audio Listing/Image 47.png") },
+  // ];
+  // const artists = [
+  //   { id: '1', name: 'Jennifer Wilson', img: require("../assets/images/Home - Audio Listing/Image 39.png") },
+  //   { id: '2', name: 'Elizabeth Hall', img: require("../assets/images/Home - Audio Listing/Image 40.png") },
+  //   { id: '3', name: 'Anthony Thow', img: require("../assets/images/Home - Audio Listing/Image 41.png") },
+  // ];
 
   const Suggestion = ({ id, image }: suggestionProps) => (
     <View style={styles.paddingItem}>
@@ -76,7 +94,7 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
   const Chart = ({ id, name, status, img }: chartProps) => (
     <View style={styles.paddingItem}>
       <TouchableOpacity onPress={id === '1' ? navigateToPlayListDetail : undefined}>
-        <Image source={img} />
+        <Image source={{uri: img}} style={{height: 130, width: 130}}/>
       </TouchableOpacity>
       <Text style={{ color: 'gray' }}>{name}</Text>
       <Text style={{ color: 'gray' }}>{status}</Text>
@@ -86,7 +104,7 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
   const Album = ({ name, artist, img }: albumProps) => (
     <View style={styles.paddingItem}>
       <TouchableOpacity>
-        <Image source={img} />
+        <Image source={{uri: img}} style={{height: 130, width: 130}}/>
       </TouchableOpacity>
       <Text style={{ fontWeight: '500' }}>{name}</Text>
       <Text style={{ color: 'gray' }}>{artist}</Text>
@@ -96,7 +114,7 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
   const Artist = ({ id, name, img }: artistProps) => (
     <View style={styles.artistContainer}>
       <TouchableOpacity onPress={() => navigateToArtistProfile(id)}>
-        <Image source={img} />
+        <Image source={{uri: img}} style={{height: 130, width: 130}}/>
       </TouchableOpacity>
       <Text style={{ fontWeight: '500' }}>{name}</Text>
       <TouchableOpacity style={styles.followBtn}>
@@ -177,7 +195,7 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
               horizontal
               data={albums}
               renderItem={({ item }) => (
-                <Album img={item.img} name={item.name} artist={item.artist} />
+                <Album id={item.id} img={item.img} name={item.name} artist={item.artist} />
               )}
               keyExtractor={item => item.id}
               showsHorizontalScrollIndicator={false}

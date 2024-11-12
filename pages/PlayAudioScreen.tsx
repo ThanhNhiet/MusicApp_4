@@ -6,20 +6,27 @@ import axios from 'axios';
 
 const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
-type songProps = {
-    id: string;
-    title: string;
-    artist: string;
-    duration: string;
-    image: string;
-    Listens: string;
-    uri: string;
-    onPress: () => void;
-};
-
 export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any) {
 
     const [songs, setSongs] = useState<songProps[]>([]);
+    type songProps = {
+        id: string;
+        title: string;
+        artist: string;
+        artist_id: string;
+        duration: string;
+        image: string;
+        Listens: string;
+        uri: string;
+        onPress: () => void;
+    };
+
+    const [artists, setArtists] = useState<artistProps[]>([]);
+    type artistProps = {
+        id: string;
+        name: string;
+        image: string;
+    };
     const [currentSong, setCurrentSong] = useState<songProps | null>(null);
     const [sound, setSound] = useState<Audio.Sound | null>(null); //use state quan ly am thanh
     const [isPlaying, setIsPlaying] = useState(false); //Trang thai phat nhac
@@ -32,6 +39,10 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
 
             if (dataWithSongs && dataWithSongs.songs) {
                 setSongs(dataWithSongs.songs);
+            }
+            const dataWithArtists = response.data.find((item: any) => item.artists);
+            if (dataWithArtists && dataWithArtists.artists) {
+                setArtists(dataWithArtists.artists);
             }
         } catch (error) {
             console.error("Error fetching songs:", error);
@@ -185,7 +196,8 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
                     <View style={styles.infoContainer}>
                         <View>
                             <Text style={styles.songTitle}>{currentSong.title}</Text>
-                            <Text style={styles.artist}>{currentSong.artist}</Text>
+                            <Text style={styles.artist}>{artists.find((item: artistProps) => item.id === currentSong.artist_id)?.name}</Text>
+                            {/* <Text style={styles.artist}>{currentSong.artist}</Text> */}
                         </View>
 
                         {/* Audio wave image */}

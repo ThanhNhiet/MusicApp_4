@@ -5,20 +5,27 @@ import axios from "axios";
 
 const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
-type songProps = {
-    id: string;
-    title: string;
-    artist: string;
-    duration: string;
-    image: string;
-    Listens: string;
-    uri: string;
-    onPress: () => void;
-};
-
 export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: any) {
 
     const [songs, setSongs] = useState<songProps[]>([]);
+    type songProps = {
+        id: string;
+        title: string;
+        artist: string;
+        artist_id: string;
+        duration: string;
+        image: string;
+        Listens: string;
+        uri: string;
+        onPress: () => void;
+    };
+
+    const [artists, setArtists] = useState<artistProps[]>([]);
+    type artistProps = {
+        id: string;
+        name: string;
+        image: string;
+    };
     const [currentSong, setCurrentSong] = useState<songProps | null>(null);
 
     const fetchSongs = async () => {
@@ -32,6 +39,10 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
                     setCurrentSong(dataWithSongs.songs[0]);
                 }
             }
+            const dataWithArtists = response.data.find((item: any) => item.artists);
+            if (dataWithArtists && dataWithArtists.artists) {
+                setArtists(dataWithArtists.artists);
+            }
         } catch (error) {
             console.error("Error fetching songs:", error);
         }
@@ -43,7 +54,7 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
 
 
 
-    const Song = ({ id, image, title, artist, Listens, duration, uri, onPress }: songProps) => (
+    const Song = ({ id, image, title, artist_id, Listens, duration, uri, onPress }: songProps) => (
         <View style={styles.containerListSong}>
             <TouchableOpacity onPress={onPress}>
                 <Image style={{ height: 70, width: 70 }} source={{ uri: image }} />
@@ -51,7 +62,8 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
 
             <View style={{ marginLeft: 10, flex: 1 }}>
                 <Text style={{ fontSize: 15, fontWeight: "bold" }}>{title}</Text>
-                <Text style={{ color: "gray" }}>{artist}</Text>
+                {/* <Text style={{ color: "gray" }}>{artist}</Text> */}
+                <Text style={{ color: "gray" }}>{artists.find((item: artistProps) => item.id === artist_id)?.name}</Text>
                 <View style={{ flexDirection: "row" }}>
                     <Text style={{ color: "gray" }}>{Listens}</Text>
                     <Text style={{ color: "gray", paddingLeft: 10 }}>{duration}</Text>
@@ -132,10 +144,10 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
                         <FlatList
                             data={songs}
                             renderItem={({ item }: any) => (
-                                <Song id={item.id} image={item.image} title={item.title} artist={item.artist}
-                                    Listens={item.Listens} duration={item.duration}
-                                    uri={item.uri}
-                                    onPress={() => setCurrentSong(item)} />
+                                <Song id={item.id} image={item.image} title={item.title} artist_id={item.artist_id}
+                                Listens={item.Listens} duration={item.duration}
+                                uri={item.uri}
+                                onPress={() => setCurrentSong(item)} artist={""} />
                             )}
                             keyExtractor={(item) => item.id}
                         />
