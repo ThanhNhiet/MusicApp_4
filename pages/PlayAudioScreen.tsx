@@ -31,6 +31,8 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
     const [sound, setSound] = useState<Audio.Sound | null>(null); //use state quan ly am thanh
     const [isPlaying, setIsPlaying] = useState(false); //Trang thai phat nhac
     const [PPicon, setPPicon] = useState(require('../assets/images/Play an Audio/playIcon.png'))
+    const [positionMillis, setPositionMillis] = useState(0);
+    const [durationMillis, setDurationMillis] = useState(0);
 
     const fetchSongs = async () => {
         try {
@@ -69,34 +71,39 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
     async function handlePlayPause() {
         try {
             if (sound === null) {
-                // Tạo sound mới nếu chưa có sound
-                if (currentSong && currentSong.uri) { // Kiểm tra xem currentSong và URI không phải null
+                if (currentSong && currentSong.uri) {
                     const { sound: newSound } = await Audio.Sound.createAsync(
                         { uri: currentSong.uri }
                     );
                     setSound(newSound);
-                    setIsPlaying(true); // Đang phát nhạc
+                    setIsPlaying(true);
                     setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
+
+                    newSound.setOnPlaybackStatusUpdate((status) => {
+                        if (status.isLoaded) {
+                            setPositionMillis(status.positionMillis);
+                            setDurationMillis(status.durationMillis || 1);
+                        }
+                    });
                     await newSound.playAsync();
                 } else {
                     throw new Error("No song selected");
                 }
             } else {
-                // Nếu đã có sound, kiểm tra xem đang phát hay tạm dừng
                 if (isPlaying) {
-                    await sound.pauseAsync(); // Tạm dừng nhạc
+                    await sound.pauseAsync();
                     setIsPlaying(false);
-                    setPPicon(require('../assets/images/Play an Audio/playIcon.png'))
+                    setPPicon(require('../assets/images/Play an Audio/playIcon.png'));
                 } else {
-                    await sound.playAsync(); // Phát lại nhạc
+                    await sound.playAsync();
                     setIsPlaying(true);
-                    setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'))
+                    setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
                 }
             }
         } catch (error) {
-            console.error("Error playing/pausing audio:", error); // Log lỗi cho developer
-            Alert.alert("Error", "403"); // Thông báo lỗi cho người dùng
-            setPPicon(require('../assets/images/Play an Audio/playIcon.png'))
+            console.error("Error playing/pausing audio:", error);
+            Alert.alert("Error", "403");
+            setPPicon(require('../assets/images/Play an Audio/playIcon.png'));
         }
     }
 
@@ -137,7 +144,13 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
             // Tạo và phát bài hát tiếp theo
             const { sound: newSound } = await Audio.Sound.createAsync({ uri: nextSong.uri });
             setSound(newSound);
-            setIsPlaying(true); // Đang phát nhạc
+            setIsPlaying(true);
+            newSound.setOnPlaybackStatusUpdate((status) => {
+                if (status.isLoaded) {
+                    setPositionMillis(status.positionMillis);
+                    setDurationMillis(status.durationMillis || 1);
+                }
+            });
             setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
             await newSound.playAsync();
         } catch (error) {
@@ -168,6 +181,12 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
             setSound(newSound);
             setIsPlaying(true); // Đang phát nhạc
             setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
+            newSound.setOnPlaybackStatusUpdate((status) => {
+                if (status.isLoaded) {
+                    setPositionMillis(status.positionMillis);
+                    setDurationMillis(status.durationMillis || 1);
+                }
+            });
             await newSound.playAsync();
         } catch (error) {
             console.error(error);
@@ -200,16 +219,34 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
                             {/* <Text style={styles.artist}>{currentSong.artist}</Text> */}
                         </View>
 
-                        {/* Audio wave image */}
-                        <Image
+                        {/* Audio wave image AKA progress bar */}
+                        {/* <Image
                             source={require('../assets/images/Play an Audio/Group 4.png')}
                             style={styles.audioWave}
-                        />
+                        /> */}
 
                         {/* Time display */}
-                        <View style={styles.timeContainer}>
+                        {/* <View style={styles.timeContainer}>
                             <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>0:06</Text>
                             <Text style={styles.timeText}>{currentSong.duration}</Text>
+                        </View> */}
+
+                        <View style={styles.progressBarContainer}>
+                            <View
+                                style={[
+                                    styles.progressBar,
+                                    { width: `${(positionMillis / durationMillis) * 100}%` }
+                                ]}
+                            />
+                        </View>
+
+                        <View style={styles.timeContainer}>
+                            <Text style={{ fontSize: 14, color: 'white', fontWeight: 'bold' }}>
+                                {new Date(positionMillis).toISOString().substr(14, 5)}
+                            </Text>
+                            <Text style={styles.timeText}>
+                                {new Date(durationMillis).toISOString().substr(14, 5)}
+                            </Text>
                         </View>
                     </View>
                 )}
@@ -323,6 +360,18 @@ const styles = StyleSheet.create({
         color: 'gray',
         fontSize: 14,
         fontWeight: 'bold',
+    },
+    progressBarContainer: {
+        width: '100%',
+        height: 4,
+        backgroundColor: '#555',
+        borderRadius: 2,
+        overflow: 'hidden',
+        marginTop: 10,
+    },
+    progressBar: {
+        height: '100%',
+        backgroundColor: 'white',
     },
 
     //Controls buttons
