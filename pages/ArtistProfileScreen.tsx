@@ -43,7 +43,7 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
     const [albums, setAlbums] = useState<albumProps[]>([]);
     type albumProps = {
         id: string;
-        title: string;
+        name: string;
         img: string;
     }
 
@@ -96,8 +96,18 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
         if (idArtist && artists.length > 0) {
             const artistFound = artists.find((artist) => artist.id === idArtist);
             setArtist(artistFound || null);
+
+            if(artistFound) {
+                getSongByArtistId(artistFound.id);
+            }
         }
     }, [idArtist, artists]);
+
+    const [artistSongs, setArtistSongs] = useState<songProps[]>([]);
+    function getSongByArtistId(artistId: string) {
+        const songByArtist = songs.filter(song => song.artist_id === artistId);
+        setArtistSongs(songByArtist);
+    }
 
     const Song = ({ image, title, Listens, duration }: songProps) => (
         <View style={styles.containerListSong}>
@@ -120,12 +130,12 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
         </View>
     );
 
-    const Album = ({ img, title }: albumProps) => (
+    const Album = ({id, img, name }: albumProps) => (
         <View style={styles.paddingItem}>
             <TouchableOpacity>
                 <Image source={{uri: img}} style={{height: 150, width: 150}}/>
             </TouchableOpacity>
-            <Text style={{ fontWeight: '500' }}>{title}</Text>
+            <Text style={{ fontWeight: '500' }}>{name}</Text>
             <Text style={{ color: 'gray' }}>{artist?.name}</Text>
         </View>
     );
@@ -189,7 +199,7 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
                     <View style={styles.popularSongContainer}>
                         <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Popular</Text>
                         <FlatList
-                            data={songs}
+                            data={artistSongs}
                             renderItem={({ item }) => (
                                 <Song id={item.id} artist_id={item.artist_id} image={item.image} title={item.title} Listens={item.Listens} duration={item.duration}
                                 />
@@ -202,8 +212,8 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
                         <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Albums</Text>
                         <FlatList
                             data={albums}
-                            renderItem={({ item }) => (
-                                <Album id={item.id} img={item.img} title={item.title}
+                            renderItem={({ item }: any) => (
+                                <Album id={item.id} img={item.img} name={item.name}
                                 />
                             )}
                             horizontal
@@ -224,7 +234,7 @@ export default function ArtistProfile({ navigateToHome, idArtist }: { navigateTo
                     </View>
 
                     <View style={{ paddingHorizontal: 20, marginBottom: 100 }}>
-                        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Albums</Text>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', marginBottom: 10 }}>Fan also like</Text>
                         <FlatList
                             data={recommends}
                             renderItem={({ item }) => (
