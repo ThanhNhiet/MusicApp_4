@@ -1,11 +1,31 @@
 import { useEffect, useState } from "react";
 import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import { useChart } from '../constants/ChartContext';
 import axios from "axios";
 
 const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
 export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: any) {
+
+    const { idCChart, setIdCChart } = useChart();
+
+    useEffect(() => {
+        if (idCChart) {
+            // Lấy dữ liệu dựa trên idCChart
+            console.log('Chart ID:', idCChart);
+        }
+    }, [idCChart]);
+
+    const [charts, setCharts] = useState<chartProps[]>([]);
+    type chartProps = {
+        id: string;
+        name: string;
+        title: string;
+        status: string;
+        img: string;
+        songs: string[];
+    };
 
     const [songs, setSongs] = useState<songProps[]>([]);
     type songProps = {
@@ -32,17 +52,20 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
         try {
             const response = await axios.get(api);
             const dataWithSongs = response.data.find((item: any) => item.songs);
-
             if (dataWithSongs && dataWithSongs.songs) {
                 setSongs(dataWithSongs.songs);
-                if (dataWithSongs.songs.length > 0) {
-                    setCurrentSong(dataWithSongs.songs[0]);
-                }
             }
+
             const dataWithArtists = response.data.find((item: any) => item.artists);
             if (dataWithArtists && dataWithArtists.artists) {
                 setArtists(dataWithArtists.artists);
             }
+
+            const dataWithCharts = response.data.find((item: any) => item.charts);
+            if (dataWithCharts && dataWithCharts.charts) {
+                setCharts(dataWithCharts.charts);
+            }
+
         } catch (error) {
             console.error("Error fetching songs:", error);
         }
@@ -52,7 +75,42 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
         fetchSongs();
     }, []);
 
+    const [chart, setChart] = useState<chartProps | null>(null);
+    useEffect(() => {
+        if (idCChart && charts.length > 0) {
+            const chartFound = charts.find((chart) => chart.id === idCChart);
+            setChart(chartFound || null);
+            if (chartFound) {
+                getSongByChartId(chartFound.id);
+            }
+        }
+    }, [idCChart, charts, songs]);
 
+    const [chartSongs, setChartSongs] = useState<songProps[]>([]);
+    function getSongByChartId(chartId: string) {
+        const chart = charts.find((chart) => chart.id === chartId);
+        if (chart) {
+            const songIds = chart.songs;
+
+            if (songIds) {
+                // Lọc bài hát dựa vào songIds
+                const filteredSongs = songs.filter((song) => songIds.includes(song.id));
+                setChartSongs(filteredSongs);
+            } else {
+                console.log(`Chart ${chartId} không chứa danh sách bài hát.`);
+                setChartSongs([]);
+            }
+        } else {
+            console.log(`Không tìm thấy chart với id: ${chartId}`);
+            setChartSongs([]);
+        }
+    }
+
+    useEffect(() => {
+        if (chartSongs.length > 0) {
+            setCurrentSong(chartSongs[0]);
+        }
+    }, [chartSongs]);
 
     const Song = ({ id, image, title, artist_id, Listens, duration, uri, onPress }: songProps) => (
         <View style={styles.containerListSong}>
@@ -90,7 +148,7 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
                         </TouchableOpacity>
                     </View>
 
-                    <View style={styles.titleContainer}>
+                    {/* <View style={styles.titleContainer}>
                         <View style={styles.ImgWithTextContainer}>
                             <Image
                                 style={styles.ImageWithText_imgSize}
@@ -117,6 +175,31 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
                             </View>
                             <Text style={{ color: "gray", marginTop: 10 }}>Daily chart - toppers update</Text>
                         </View>
+                    </View> */}
+
+                    <View style={styles.titleContainer}>
+                        <View style={styles.ImgWithTextContainer}>
+                            <Image
+                                style={styles.ImageWithText_imgSize}
+                                source={{ uri: chart?.img }}
+                            />
+                        </View>
+                        <View style={{ marginLeft: 10, }}>
+                            <Text style={{ fontSize: 18, fontWeight: "bold" }}>{chart?.title}</Text>
+                            <View style={{ flexDirection: "row", marginTop: 10, alignItems: "center" }}>
+                                <Image
+                                    style={{ height: 17, width: 17, marginRight: 5 }}
+                                    source={require("../assets/images/Playlist Details - Audio Listing/favoriteIconBlue.png")}
+                                />
+                                <Text style={{ color: "gray", marginRight: 10 }}>1,234</Text>
+                                <Image
+                                    style={{ height: 12, width: 12, marginRight: 5 }}
+                                    source={require("../assets/images/Playlist Details - Audio Listing/circleGray.png")}
+                                />
+                                <Text style={{ color: "gray" }}>05:10:18</Text>
+                            </View>
+                            <Text style={{ color: "gray", marginTop: 10 }}>{chart?.name} {chart?.status}</Text>
+                        </View>
                     </View>
 
                     <View style={styles.containerPlay}>
@@ -142,12 +225,12 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
 
                     <View style={{ padding: 20 }}>
                         <FlatList
-                            data={songs}
+                            data={chartSongs}
                             renderItem={({ item }: any) => (
                                 <Song id={item.id} image={item.image} title={item.title} artist_id={item.artist_id}
-                                Listens={item.Listens} duration={item.duration}
-                                uri={item.uri}
-                                onPress={() => setCurrentSong(item)} artist={""} />
+                                    Listens={item.Listens} duration={item.duration}
+                                    uri={item.uri}
+                                    onPress={() => setCurrentSong(item)} artist={""} />
                             )}
                             keyExtractor={(item) => item.id}
                         />
