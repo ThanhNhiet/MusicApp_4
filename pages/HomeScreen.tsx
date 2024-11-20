@@ -2,6 +2,7 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { Image, StyleSheet, Text, TextInput, View, FlatList, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
+import { useChart } from '../constants/ChartContext';
 
 export default function Home({ navigateToPlayListDetail, navigateToArtistProfile }: any) {
   const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
@@ -91,10 +92,12 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
     </View>
   );
 
+  const { idCChart, setIdCChart } = useChart();
+
   const Chart = ({ id, name, status, img }: chartProps) => (
     <View style={styles.paddingItem}>
       {/* <TouchableOpacity onPress={id === '1' ? navigateToPlayListDetail : undefined}> */}
-      <TouchableOpacity onPress={() => navigateToPlayListDetail(id)}>
+      <TouchableOpacity onPress={() => {setIdCChart(id); navigateToPlayListDetail();}}>
         <Image source={{ uri: img }} style={{ height: 130, width: 130 }} />
       </TouchableOpacity>
       <Text style={{ color: 'gray' }}>{name}</Text>
