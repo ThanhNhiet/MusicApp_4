@@ -9,11 +9,12 @@ import PlayAudioScreen from '../pages/PlayAudioScreen';
 import ArtistProfile from '../pages/ArtistProfileScreen';
 import SearchResults from '../pages/SearchResults';
 import Feed from '../pages/FeedScreen';
-import FeedComment  from '../pages/FeedComment';
-import LibraryScreen  from '../pages/LibraryScreen';
+import FeedComment from '../pages/FeedComment';
+import LibraryScreen from '../pages/LibraryScreen';
 import PlaylistScreen from '../pages/MyPlaylistsScreen';
 import SubscriptionPlans from '../pages/SubscriptionPlans';
 import LaunchPremiumScreen from '../pages/LaunchPremiumScreen';
+import { ChartProvider } from '../constants/ChartContext';
 
 export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
@@ -32,7 +33,6 @@ export default function App() {
 
   const navigateToPlaylistDetail = (id: string) => {
     setCurrentScreen('PlaylistDetail');
-    setIdChart(id);
   };
 
   const navigateToTestNav = () => {
@@ -49,7 +49,7 @@ export default function App() {
     setIdArtist(id);
   };
 
-  const navigateToSearchResults = (text:string) => {
+  const navigateToSearchResults = (text: string) => {
     setCurrentScreen('Searchresults');
     setSearchText(text)
   };
@@ -88,44 +88,46 @@ export default function App() {
   }, [currentScreen]);
 
   return (
-    <View style={{ flex: 1 }}>
+    <ChartProvider>
+      <View style={{ flex: 1 }}>
 
-      {/* Nếu currentScreen là LaunchScreen thì render thẻ LauchScreen.tsx đã được import */}
-      {/* Biến navigateToHome của LauchScreen.tsx sẽ gọi hàm navigateToHome của index để 
+        {/* Nếu currentScreen là LaunchScreen thì render thẻ LauchScreen.tsx đã được import */}
+        {/* Biến navigateToHome của LauchScreen.tsx sẽ gọi hàm navigateToHome của index để 
         set currentScreen là Home và render màn hình HomeScreen.tsx*/}
-      {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} navigateToLaunchPremium={navigateToLaunchPremium} />}
-      {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} navigateToArtistProfile={navigateToArtistProfile}/>}
-      {currentScreen === 'PlaylistDetail' && idChart && <PlaylistDetail navigateToHome={navigateToHome} idChart={idChart} navigateToPlayAudio={navigateToPlayAudio} />}
-      {currentScreen === 'Search' && <TestNav navigateToSearchResults={navigateToSearchResults}/>}
-      {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} song={selectedSong} />}
-      {currentScreen === 'ArtistProfile' && idArtist && <ArtistProfile navigateToHome={navigateToHome} idArtist={idArtist}/>}
-      {currentScreen === 'Searchresults' && <SearchResults navigateToSearchResults={navigateToSearchResults} search={search} />}
-      {currentScreen === 'Feed' && <Feed navigateToFeedComment={navigateToFeedComment} navigateToFeed={navigateToFeed} />}
-      {currentScreen === 'Feedcomment' && <FeedComment navigateFeedComment={navigateToFeedComment} navigateToFeed={navigateToFeed}/>}
-      {currentScreen === 'Library' && <LibraryScreen navigateToLibrary={navigateToLibrary} navigateToMylist={navigateToMylist}/>}
-      {currentScreen === 'MyList' && <PlaylistScreen navigateToMylist={navigateToMylist}  navigateToLibrary={navigateToLibrary}  />}
-      {currentScreen === 'SubscriptionPlans' && <SubscriptionPlans  navigateToHome={navigateToHome} />}
-      {currentScreen === 'LaunchPremiumScreen' && <LaunchPremiumScreen   navigateToSubPlans={navigateToSubPlans}  />}
-      {/* Các màn hình có tab bar menu */}
-      {(currentScreen === 'Home' || currentScreen === 'Library' || currentScreen === 'PlaylistDetail'
-        || currentScreen === 'ArtistProfile' || currentScreen === 'Search' || currentScreen === 'Searchresults' 
-        || currentScreen === 'Feed' || currentScreen === 'MyList'
-      ) && (
-        <TabBarMenu
-          activeTab={currentScreen}
-          onTabPress={(tabName) => {
-            if (tabName === 'Home') {
-              navigateToHome();
-            } else if (tabName === 'Search') {
-              navigateToTestNav();
-            } else if (tabName === 'Feed') {
-              navigateToFeed();
-            } else if (tabName === 'Library') {
-              navigateToLibrary();
-            }
-          }}
-        />
-      )}
-    </View>
+        {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} navigateToLaunchPremium={navigateToLaunchPremium} />}
+        {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} navigateToArtistProfile={navigateToArtistProfile} />}
+        {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome} navigateToPlayAudio={navigateToPlayAudio} />}
+        {currentScreen === 'Search' && <TestNav navigateToSearchResults={navigateToSearchResults} />}
+        {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} song={selectedSong} />}
+        {currentScreen === 'ArtistProfile' && idArtist && <ArtistProfile navigateToHome={navigateToHome} idArtist={idArtist} />}
+        {currentScreen === 'Searchresults' && <SearchResults navigateToSearchResults={navigateToSearchResults} search={search} />}
+        {currentScreen === 'Feed' && <Feed navigateToFeedComment={navigateToFeedComment} navigateToFeed={navigateToFeed} />}
+        {currentScreen === 'Feedcomment' && <FeedComment navigateFeedComment={navigateToFeedComment} navigateToFeed={navigateToFeed} />}
+        {currentScreen === 'Library' && <LibraryScreen navigateToLibrary={navigateToLibrary} navigateToMylist={navigateToMylist} />}
+        {currentScreen === 'MyList' && <PlaylistScreen navigateToMylist={navigateToMylist} navigateToLibrary={navigateToLibrary} />}
+        {currentScreen === 'SubscriptionPlans' && <SubscriptionPlans navigateToHome={navigateToHome} />}
+        {currentScreen === 'LaunchPremiumScreen' && <LaunchPremiumScreen navigateToSubPlans={navigateToSubPlans} />}
+        {/* Các màn hình có tab bar menu */}
+        {(currentScreen === 'Home' || currentScreen === 'Library' || currentScreen === 'PlaylistDetail'
+          || currentScreen === 'ArtistProfile' || currentScreen === 'Search' || currentScreen === 'Searchresults'
+          || currentScreen === 'Feed' || currentScreen === 'MyList'
+        ) && (
+            <TabBarMenu
+              activeTab={currentScreen}
+              onTabPress={(tabName) => {
+                if (tabName === 'Home') {
+                  navigateToHome();
+                } else if (tabName === 'Search') {
+                  navigateToTestNav();
+                } else if (tabName === 'Feed') {
+                  navigateToFeed();
+                } else if (tabName === 'Library') {
+                  navigateToLibrary();
+                }
+              }}
+            />
+          )}
+      </View>
+    </ChartProvider>
   );
 }
