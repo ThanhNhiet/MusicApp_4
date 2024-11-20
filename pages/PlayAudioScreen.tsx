@@ -1,8 +1,11 @@
 import { Route } from 'expo-router/build/Route';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Image, StyleSheet, TouchableOpacity, Text, ImageBackground, Alert } from 'react-native';
 import { Audio } from 'expo-av';
 import axios from 'axios';
+import { usePlayingState } from '../constants/StateSongContext';
+import {useSong} from '../constants/SongContext';
 
 const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
@@ -29,10 +32,13 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
     };
     const [currentSong, setCurrentSong] = useState<songProps | null>(null);
     const [sound, setSound] = useState<Audio.Sound | null>(null); //use state quan ly am thanh
-    const [isPlaying, setIsPlaying] = useState(false); //Trang thai phat nhac
+    // const [isPlaying, setIsPlaying] = useState(false); //Trang thai phat nhac
     const [PPicon, setPPicon] = useState(require('../assets/images/Play an Audio/playIcon.png'))
     const [positionMillis, setPositionMillis] = useState(0);
     const [durationMillis, setDurationMillis] = useState(0);
+
+    const { c_isPlaying, c_setIsPlaying } = usePlayingState();
+    const { idSong, setIdSong } = useSong();
 
     const fetchSongs = async () => {
         try {
@@ -58,46 +64,101 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
     useEffect(() => {
         if (song) {
             setCurrentSong(song); // Cập nhật bài hát hiện tại
+            setIdSong(song.id);
+            startMusic(song);
         }
         return () => {
-            // Cleanup khi component bị unmount
             if (sound) {
-                sound.unloadAsync();
+                sound.unloadAsync(); // Giải phóng tài nguyên khi rời trang
             }
         };
     }, [song]);
+
+    async function startMusic(newSong?: songProps) {
+        try {
+            // Nếu bài hát mới khác bài hát hiện tại, phát bài hát mới
+            if (newSong && currentSong?.id !== newSong.id) {
+                // Dừng bài hát cũ nếu cần
+                if (sound) {
+                    await sound.stopAsync();
+                    await sound.unloadAsync();
+                    setSound(null);
+                    console.log("Sound stopped and unloaded");
+                }else {
+                    console.log("No sound to stop");
+                }
+    
+                // Phát bài hát mới
+                const { sound: newSound } = await Audio.Sound.createAsync(
+                    { uri: newSong.uri }
+                );
+                setSound(newSound);
+                setCurrentSong(newSong);
+                c_setIsPlaying(true); // Cập nhật trạng thái toàn cục
+                setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
+    
+                // Theo dõi trạng thái phát nhạc
+                newSound.setOnPlaybackStatusUpdate((status) => {
+                    if (status.isLoaded) {
+                        setPositionMillis(status.positionMillis);
+                        setDurationMillis(status.durationMillis || 1);
+                    }
+                });
+    
+                await newSound.playAsync();
+            } else if (sound) {
+                // Nếu bài hát cũ vẫn đang phát, tiếp tục phát
+                await sound.playAsync();
+                c_setIsPlaying(true);
+            }else {
+                console.log("No sound available to play.");
+            }
+        } catch (error) {
+            console.error("Error playing audio:", error);
+            Alert.alert("Error", "403");
+            setPPicon(require('../assets/images/Play an Audio/playIcon.png'));
+        }
+    }
+    
 
     // Hàm phát hoặc tạm dừng nhạc
     async function handlePlayPause() {
         try {
             if (sound === null) {
+                // Nếu chưa khởi tạo sound, phát nhạc
                 if (currentSong && currentSong.uri) {
                     const { sound: newSound } = await Audio.Sound.createAsync(
                         { uri: currentSong.uri }
                     );
                     setSound(newSound);
-                    setIsPlaying(true);
+                    c_setIsPlaying(true); // Cập nhật trạng thái toàn cục
                     setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
 
+                    // Theo dõi trạng thái phát nhạc
                     newSound.setOnPlaybackStatusUpdate((status) => {
                         if (status.isLoaded) {
                             setPositionMillis(status.positionMillis);
                             setDurationMillis(status.durationMillis || 1);
                         }
                     });
+
+                    // Bắt đầu phát nhạc
                     await newSound.playAsync();
                 } else {
                     throw new Error("No song selected");
                 }
             } else {
-                if (isPlaying) {
-                    await sound.pauseAsync();
-                    setIsPlaying(false);
+                // Nếu sound đã khởi tạo, kiểm tra trạng thái
+                if (c_isPlaying) {
+                    await sound.pauseAsync(); // Tạm dừng nhạc
+                    c_setIsPlaying(false); // Cập nhật trạng thái toàn cục
                     setPPicon(require('../assets/images/Play an Audio/playIcon.png'));
+                    setIdSong(null);
                 } else {
-                    await sound.playAsync();
-                    setIsPlaying(true);
+                    await sound.playAsync(); // Tiếp tục phát nhạc
+                    c_setIsPlaying(true); // Cập nhật trạng thái toàn cục
                     setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
+                    setIdSong(song.id);
                 }
             }
         } catch (error) {
@@ -111,8 +172,9 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
     async function handleNavigateBack() {
         try {
             if (sound) {
-                if (isPlaying) {
-                    await sound.stopAsync(); // Dừng nhạc nếu đang phát
+                if (c_isPlaying) {
+                     await sound.stopAsync();// Dừng nhạc nếu đang phát
+                     c_setIsPlaying(false); // Cập nhật trạng thái toàn cục
                 }
                 await sound.unloadAsync(); // Giải phóng tài nguyên âm thanh
             }
@@ -144,7 +206,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
             // Tạo và phát bài hát tiếp theo
             const { sound: newSound } = await Audio.Sound.createAsync({ uri: nextSong.uri });
             setSound(newSound);
-            setIsPlaying(true);
+            c_setIsPlaying(true);
             newSound.setOnPlaybackStatusUpdate((status) => {
                 if (status.isLoaded) {
                     setPositionMillis(status.positionMillis);
@@ -179,7 +241,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
             // Tạo và phát bài hát trước đó
             const { sound: newSound } = await Audio.Sound.createAsync({ uri: prevSong.uri });
             setSound(newSound);
-            setIsPlaying(true); // Đang phát nhạc
+            c_setIsPlaying(true); // Đang phát nhạc
             setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
             newSound.setOnPlaybackStatusUpdate((status) => {
                 if (status.isLoaded) {
@@ -197,28 +259,28 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
         try {
             // Kiểm tra nếu danh sách bài hát rỗng
             if (songs.length === 0) throw new Error("Song list is empty");
-    
+
             // Lấy ngẫu nhiên một bài hát không trùng với bài hát hiện tại
             let randomIndex;
             do {
                 randomIndex = Math.floor(Math.random() * songs.length);
             } while (currentSong && songs[randomIndex].id === currentSong.id);
-    
+
             // Lấy bài hát ngẫu nhiên
             const randomSong = songs[randomIndex];
             setCurrentSong(randomSong); // Cập nhật bài hát hiện tại
-    
+
             // Dừng bài hát hiện tại (nếu đang phát)
             if (sound) {
                 await sound.unloadAsync();
             }
-    
+
             // Tạo và phát bài hát ngẫu nhiên
             const { sound: newSound } = await Audio.Sound.createAsync({ uri: randomSong.uri });
             setSound(newSound);
-            setIsPlaying(true);
+            c_setIsPlaying(true);
             setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
-    
+
             // Cập nhật trạng thái phát nhạc
             newSound.setOnPlaybackStatusUpdate((status) => {
                 if (status.isLoaded) {
@@ -226,7 +288,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
                     setDurationMillis(status.durationMillis || 1);
                 }
             });
-    
+
             await newSound.playAsync(); // Phát bài hát
         } catch (error) {
             console.error("Error in handleRandom:", error);
@@ -234,7 +296,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
             setPPicon(require('../assets/images/Play an Audio/playIcon.png'));
         }
     }
-    
+
 
     return (
         <ImageBackground

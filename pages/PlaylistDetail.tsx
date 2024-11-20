@@ -3,12 +3,14 @@ import { FlatList, Image, ScrollView, StyleSheet, Text, TouchableOpacity, View }
 import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { useChart } from '../constants/ChartContext';
 import axios from "axios";
+import {useSong} from '../constants/SongContext';
 
 const api = "https://6716220e33bc2bfe40bc87df.mockapi.io/api/src";
 
 export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: any) {
 
     const { idCChart, setIdCChart } = useChart();
+    const { idSong, setIdSong } = useSong();
 
     useEffect(() => {
         if (idCChart) {
@@ -107,6 +109,13 @@ export default function PlaylistDetail({ navigateToHome, navigateToPlayAudio }: 
     }
 
     useEffect(() => {
+        if (idSong) {
+            const song = chartSongs.find((song) => song.id === idSong);
+            if (song) {
+                setCurrentSong(song);
+            }
+            return;
+        }
         if (chartSongs.length > 0) {
             setCurrentSong(chartSongs[0]);
         }
