@@ -19,6 +19,7 @@ export default function App() {
   const [currentScreen, setCurrentScreen] = useState('LaunchScreen');
   const [selectedSong, setSelectedSong] = useState(null);
   const [idArtist, setIdArtist] = useState<string | null>(null);
+  const [idChart, setIdChart] = useState<string | null>(null);
   const [search, setSearchText] = useState('');
 
   const navigateToHome = () => {
@@ -29,8 +30,9 @@ export default function App() {
     setCurrentScreen('LaunchScreen');
   };
 
-  const navigateToPlaylistDetail = () => {
+  const navigateToPlaylistDetail = (id: string) => {
     setCurrentScreen('PlaylistDetail');
+    setIdChart(id);
   };
 
   const navigateToTestNav = () => {
@@ -46,6 +48,7 @@ export default function App() {
     setCurrentScreen('ArtistProfile');
     setIdArtist(id);
   };
+
   const navigateToSearchResults = (text:string) => {
     setCurrentScreen('Searchresults');
     setSearchText(text)
@@ -92,7 +95,7 @@ export default function App() {
         set currentScreen là Home và render màn hình HomeScreen.tsx*/}
       {currentScreen === 'LaunchScreen' && <LaunchScreen navigateToHome={navigateToHome} navigateToLaunchPremium={navigateToLaunchPremium} />}
       {currentScreen === 'Home' && <Home navigateToPlayListDetail={navigateToPlaylistDetail} navigateToArtistProfile={navigateToArtistProfile}/>}
-      {currentScreen === 'PlaylistDetail' && <PlaylistDetail navigateToHome={navigateToHome} navigateToPlayAudio={navigateToPlayAudio} />}
+      {currentScreen === 'PlaylistDetail' && idChart && <PlaylistDetail navigateToHome={navigateToHome} idChart={idChart} navigateToPlayAudio={navigateToPlayAudio} />}
       {currentScreen === 'Search' && <TestNav navigateToSearchResults={navigateToSearchResults}/>}
       {currentScreen === 'PlayAudioScreen' && <PlayAudioScreen navigateToPlayListDetail={navigateToPlaylistDetail} song={selectedSong} />}
       {currentScreen === 'ArtistProfile' && idArtist && <ArtistProfile navigateToHome={navigateToHome} idArtist={idArtist}/>}
