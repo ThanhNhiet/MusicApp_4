@@ -93,8 +93,9 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
 
   const Chart = ({ id, name, status, img }: chartProps) => (
     <View style={styles.paddingItem}>
-      <TouchableOpacity onPress={id === '1' ? navigateToPlayListDetail : undefined}>
-        <Image source={{uri: img}} style={{height: 130, width: 130}}/>
+      {/* <TouchableOpacity onPress={id === '1' ? navigateToPlayListDetail : undefined}> */}
+      <TouchableOpacity onPress={() => navigateToPlayListDetail(id)}>
+        <Image source={{ uri: img }} style={{ height: 130, width: 130 }} />
       </TouchableOpacity>
       <Text style={{ color: 'gray' }}>{name}</Text>
       <Text style={{ color: 'gray' }}>{status}</Text>
@@ -104,7 +105,7 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
   const Album = ({ name, artist, img }: albumProps) => (
     <View style={styles.paddingItem}>
       <TouchableOpacity>
-        <Image source={{uri: img}} style={{height: 130, width: 130}}/>
+        <Image source={{ uri: img }} style={{ height: 130, width: 130 }} />
       </TouchableOpacity>
       <Text style={{ fontWeight: '500' }}>{name}</Text>
       <Text style={{ color: 'gray' }}>{artist}</Text>
@@ -114,7 +115,7 @@ export default function Home({ navigateToPlayListDetail, navigateToArtistProfile
   const Artist = ({ id, name, img }: artistProps) => (
     <View style={styles.artistContainer}>
       <TouchableOpacity onPress={() => navigateToArtistProfile(id)}>
-        <Image source={{uri: img}} style={{height: 130, width: 130}}/>
+        <Image source={{ uri: img }} style={{ height: 130, width: 130 }} />
       </TouchableOpacity>
       <Text style={{ fontWeight: '500' }}>{name}</Text>
       <TouchableOpacity style={styles.followBtn}>
