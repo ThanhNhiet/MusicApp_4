@@ -193,6 +193,49 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
         }
     }
 
+    async function handleRandom() {
+        try {
+            // Kiểm tra nếu danh sách bài hát rỗng
+            if (songs.length === 0) throw new Error("Song list is empty");
+    
+            // Lấy ngẫu nhiên một bài hát không trùng với bài hát hiện tại
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * songs.length);
+            } while (currentSong && songs[randomIndex].id === currentSong.id);
+    
+            // Lấy bài hát ngẫu nhiên
+            const randomSong = songs[randomIndex];
+            setCurrentSong(randomSong); // Cập nhật bài hát hiện tại
+    
+            // Dừng bài hát hiện tại (nếu đang phát)
+            if (sound) {
+                await sound.unloadAsync();
+            }
+    
+            // Tạo và phát bài hát ngẫu nhiên
+            const { sound: newSound } = await Audio.Sound.createAsync({ uri: randomSong.uri });
+            setSound(newSound);
+            setIsPlaying(true);
+            setPPicon(require('../assets/images/Play an Audio/pauseIcon.png'));
+    
+            // Cập nhật trạng thái phát nhạc
+            newSound.setOnPlaybackStatusUpdate((status) => {
+                if (status.isLoaded) {
+                    setPositionMillis(status.positionMillis);
+                    setDurationMillis(status.durationMillis || 1);
+                }
+            });
+    
+            await newSound.playAsync(); // Phát bài hát
+        } catch (error) {
+            console.error("Error in handleRandom:", error);
+            Alert.alert("Error", "Could not play a random song");
+            setPPicon(require('../assets/images/Play an Audio/playIcon.png'));
+        }
+    }
+    
+
     return (
         <ImageBackground
             source={require('../assets/images/Play an Audio/Image 58.png')}
@@ -252,7 +295,7 @@ export default function PlayAudioScreen({ navigateToPlayListDetail, song }: any)
                 )}
                 {/* Controls */}
                 <View style={styles.controlsContainer}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={handleRandom}>
                         <Image source={require('../assets/images/Play an Audio/randomIcon.png')} style={styles.controlIcon} />
                     </TouchableOpacity>
                     <TouchableOpacity onPress={handlePrev}>
